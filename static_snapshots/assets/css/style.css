@@ -1,0 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+:root{
+  --brand:#E85D9A;
+  --gold:#D4AF37;
+  --dark:#0D0D1A;
+  --muted:#888;
+}
+*{box-sizing:border-box}
+body{font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;margin:0;background:linear-gradient(180deg,#07070a 0%, #0d0d1a 100%);color:#fff;min-height:100vh}
+.container{max-width:1100px;margin:48px auto;padding:24px}
+header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.logo{font-weight:700;color:var(--brand);font-size:1.25rem}
+nav a{color:#ddd;margin-left:14px;text-decoration:none}
+.card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);padding:20px;border-radius:12px}
+h1{margin:0 0 16px 0}
+.muted{color:var(--muted)}
+.btn{display:inline-block;padding:10px 16px;border-radius:10px;background:var(--brand);color:#fff;text-decoration:none}
+footer{margin-top:36px;color:#999;font-size:0.9rem;text-align:center}
