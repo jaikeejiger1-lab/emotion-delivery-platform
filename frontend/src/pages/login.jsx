@@ -193,7 +193,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0D0D1A] text-white selection:bg-brand-500 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900 dark:bg-[#0D0D1A] dark:text-white selection:bg-brand-500 selection:text-white transition-colors duration-300">
       <Head>
         <title>Sign In / Reset Password — Emotion Delivery Platform</title>
       </Head>
@@ -205,7 +205,7 @@ export default function LoginPage() {
         <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-brand-500/15 blur-[120px] pointer-events-none" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-purple-600/15 blur-[120px] pointer-events-none" />
 
-        <div className="max-w-md w-full bg-[#14142B]/80 backdrop-blur-2xl border border-white/15 p-8 sm:p-10 rounded-3xl shadow-2xl relative z-10 transition-all duration-300">
+        <div className="max-w-md w-full bg-white/90 dark:bg-[#14142B]/80 backdrop-blur-2xl border border-gray-200 dark:border-white/15 p-8 sm:p-10 rounded-3xl shadow-2xl relative z-10 transition-all duration-300">
           
           {/* Header Section */}
           <div className="text-center mb-8">
@@ -223,7 +223,7 @@ export default function LoginPage() {
               {mode === 'reset-otp' && 'Enter Twilio OTP'}
             </h1>
 
-            <p className="text-xs sm:text-sm text-white/60 mt-2 leading-relaxed">
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-white/60 mt-2 leading-relaxed">
               {mode === 'login' && 'Sign in to access your custom gift builds and live GPS tracking.'}
               {mode === 'register' && 'Join India’s premier emotion delivery and memory curation platform.'}
               {mode === 'forgot' && 'Enter your registered phone number to receive a secure 6-digit SMS code.'}
@@ -235,7 +235,7 @@ export default function LoginPage() {
           {mode === 'login' && (
             <div className="mb-6 p-4 rounded-2xl bg-brand-500/10 border border-brand-500/30 flex items-start gap-3">
               <FiShield className="text-brand-400 shrink-0 mt-0.5 text-base" />
-              <p className="text-[11px] leading-relaxed text-white/80">
+              <p className="text-[11px] leading-relaxed text-gray-700 dark:text-white/80">
                 <strong>Email Verification Required:</strong> For your security, unverified accounts cannot sign in. Please verify via the link sent to your inbox.
               </p>
             </div>
@@ -253,7 +253,7 @@ export default function LoginPage() {
           {mode === 'login' && (
             <form onSubmit={handleLoginSubmit} className="space-y-5">
               <div className="space-y-1.5">
-                <label className="text-[11px] font-bold tracking-wider text-white/60 uppercase block">Email Address</label>
+                <label className="text-[11px] font-bold tracking-wider text-gray-500 dark:text-white/60 uppercase block">Email Address</label>
                 <div className="relative">
                   <FiMail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 text-sm" />
                   <input
@@ -270,7 +270,7 @@ export default function LoginPage() {
 
               <div className="space-y-1.5">
                 <div className="flex justify-between items-center">
-                  <label className="text-[11px] font-bold tracking-wider text-white/60 uppercase block">Password</label>
+                  <label className="text-[11px] font-bold tracking-wider text-gray-500 dark:text-white/60 uppercase block">Password</label>
                   <button
                     type="button"
                     onClick={() => { setMode('forgot'); setErrorMsg(''); }}
@@ -320,9 +320,16 @@ export default function LoginPage() {
                 </button>
               </div>
 
-              <div className="text-center pt-2">
-                <p className="text-xs text-white/40 italic">
-                  🔒 Public registration is locked for deployment. Authorized personnel only.
+              <div className="text-center pt-4 mt-2">
+                <p className="text-xs text-gray-600 dark:text-white/60">
+                  Don&apos;t have an account?{' '}
+                  <button
+                    type="button"
+                    onClick={() => { setMode('register'); setErrorMsg(''); }}
+                    className="font-bold text-brand-500 hover:text-brand-400 transition-colors"
+                  >
+                    Sign Up
+                  </button>
                 </p>
               </div>
             </form>
