@@ -2,7 +2,7 @@
  * axiosClient.js
  *
  * Pre-configured Axios instance.
- * - Base URL from environment variable
+ * - Base URL from environment variable (falls back to live Render API)
  * - Auto-attach JWT from localStorage
  * - Global error interceptor with 401 redirect
  */
@@ -10,7 +10,7 @@
 import axios from 'axios';
 
 const axiosClient = axios.create({
-  baseURL: (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api').replace('https://localhost:5000', 'http://localhost:5000'),
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://emotion-delivery-platform.onrender.com/api',
   headers: { 'Content-Type': 'application/json' },
   timeout: 30000, // 30 seconds
 });
@@ -31,7 +31,7 @@ axiosClient.interceptors.request.use(
 
 // ── Response Interceptor — handle 401 ────────────────────────────
 axiosClient.interceptors.response.use(
-  (response) => response.data, // Unwrap the axios wrapper — return { success, data }
+  (response) => response.data, 
   (error) => {
     const status = error.response?.status;
     const message = error.response?.data?.message || error.message;
