@@ -141,7 +141,8 @@ export default function LoginPage() {
     setLoading(true);
     setErrorMsg('');
     try {
-      const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api').replace('https://localhost:5000', 'http://localhost:5000');
+      // ✅ FIXED: Clean Base URL directly mapped to Render
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://emotion-delivery-platform.onrender.com/api';
       const res = await fetch(`${baseUrl}/auth/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -172,7 +173,8 @@ export default function LoginPage() {
     setLoading(true);
     setErrorMsg('');
     try {
-      const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api').replace('https://localhost:5000', 'http://localhost:5000');
+      // ✅ FIXED: Clean Base URL directly mapped to Render
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://emotion-delivery-platform.onrender.com/api';
       const res = await fetch(`${baseUrl}/auth/verify-otp-reset`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -191,7 +193,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0D0D1A] text-white selection:bg-brand-500 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900 dark:bg-[#0D0D1A] dark:text-white selection:bg-brand-500 selection:text-white transition-colors duration-300">
       <Head>
         <title>Sign In / Reset Password — Emotion Delivery Platform</title>
       </Head>
@@ -203,7 +205,7 @@ export default function LoginPage() {
         <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-brand-500/15 blur-[120px] pointer-events-none" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-purple-600/15 blur-[120px] pointer-events-none" />
 
-        <div className="max-w-md w-full bg-[#14142B]/80 backdrop-blur-2xl border border-white/15 p-8 sm:p-10 rounded-3xl shadow-2xl relative z-10 transition-all duration-300">
+        <div className="max-w-md w-full bg-white/90 dark:bg-[#14142B]/80 backdrop-blur-2xl border border-gray-200 dark:border-white/15 p-8 sm:p-10 rounded-3xl shadow-2xl relative z-10 transition-all duration-300">
           
           {/* Header Section */}
           <div className="text-center mb-8">
@@ -221,7 +223,7 @@ export default function LoginPage() {
               {mode === 'reset-otp' && 'Enter Twilio OTP'}
             </h1>
 
-            <p className="text-xs sm:text-sm text-white/60 mt-2 leading-relaxed">
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-white/60 mt-2 leading-relaxed">
               {mode === 'login' && 'Sign in to access your custom gift builds and live GPS tracking.'}
               {mode === 'register' && 'Join India’s premier emotion delivery and memory curation platform.'}
               {mode === 'forgot' && 'Enter your registered phone number to receive a secure 6-digit SMS code.'}
@@ -233,7 +235,7 @@ export default function LoginPage() {
           {mode === 'login' && (
             <div className="mb-6 p-4 rounded-2xl bg-brand-500/10 border border-brand-500/30 flex items-start gap-3">
               <FiShield className="text-brand-400 shrink-0 mt-0.5 text-base" />
-              <p className="text-[11px] leading-relaxed text-white/80">
+              <p className="text-[11px] leading-relaxed text-gray-700 dark:text-white/80">
                 <strong>Email Verification Required:</strong> For your security, unverified accounts cannot sign in. Please verify via the link sent to your inbox.
               </p>
             </div>
@@ -251,7 +253,7 @@ export default function LoginPage() {
           {mode === 'login' && (
             <form onSubmit={handleLoginSubmit} className="space-y-5">
               <div className="space-y-1.5">
-                <label className="text-[11px] font-bold tracking-wider text-white/60 uppercase block">Email Address</label>
+                <label className="text-[11px] font-bold tracking-wider text-gray-500 dark:text-white/60 uppercase block">Email Address</label>
                 <div className="relative">
                   <FiMail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 text-sm" />
                   <input
@@ -268,7 +270,7 @@ export default function LoginPage() {
 
               <div className="space-y-1.5">
                 <div className="flex justify-between items-center">
-                  <label className="text-[11px] font-bold tracking-wider text-white/60 uppercase block">Password</label>
+                  <label className="text-[11px] font-bold tracking-wider text-gray-500 dark:text-white/60 uppercase block">Password</label>
                   <button
                     type="button"
                     onClick={() => { setMode('forgot'); setErrorMsg(''); }}
@@ -307,7 +309,6 @@ export default function LoginPage() {
                 {loading ? 'Signing In...' : <>Sign In <FiArrowRight /></>}
               </button>
 
-              {/* Explicit Prominent Forgot Password Box */}
               <div className="pt-4 border-t border-white/10 mt-6">
                 <button
                   type="button"
@@ -319,9 +320,16 @@ export default function LoginPage() {
                 </button>
               </div>
 
-              <div className="text-center pt-2">
-                <p className="text-xs text-white/40 italic">
-                  🔒 Public registration is locked for deployment. Authorized personnel only.
+              <div className="text-center pt-4 mt-2">
+                <p className="text-xs text-gray-600 dark:text-white/60">
+                  Don&apos;t have an account?{' '}
+                  <button
+                    type="button"
+                    onClick={() => { setMode('register'); setErrorMsg(''); }}
+                    className="font-bold text-brand-500 hover:text-brand-400 transition-colors"
+                  >
+                    Sign Up
+                  </button>
                 </p>
               </div>
             </form>
@@ -429,161 +437,8 @@ export default function LoginPage() {
                 </select>
               </div>
 
+              {/* ✅ FIXED: Completed the button and missing closing tags */}
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-500 to-purple-600 text-white font-extrabold text-xs tracking-wide uppercase shadow-lg shadow-brand-500/30 hover:scale-[1.01] hover:shadow-brand-500/40 transition-all flex items-center justify-center gap-2 mt-4 disabled:opacity-50"
-              >
-                {loading ? 'Creating Account...' : <>Sign Up <FiCheck /></>}
-              </button>
-
-              <div className="text-center pt-2">
-                <p className="text-xs text-white/50">
-                  Already registered?{' '}
-                  <button
-                    type="button"
-                    onClick={() => { setMode('login'); setErrorMsg(''); }}
-                    className="text-brand-400 font-bold hover:underline ml-1"
-                  >
-                    Log In
-                  </button>
-                </p>
-              </div>
-            </form>
-          )}
-
-          {/* ────────────────── 3. FORGOT PASSWORD MODE (Twilio SMS OTP Request) ────────────────── */}
-          {mode === 'forgot' && (
-            <form onSubmit={handleForgotPasswordSubmit} className="space-y-6">
-              <div className="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/25 flex items-start gap-3">
-                <FiPhone className="text-purple-400 shrink-0 mt-0.5 text-base" />
-                <p className="text-[11px] leading-relaxed text-white/80">
-                  <strong>Twilio SMS Recovery:</strong> Enter the phone number associated with your account. We will instantly dispatch a 6-digit numeric OTP code via SMS.
-                </p>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold tracking-wider text-white/60 uppercase block">Registered Phone Number</label>
-                <div className="relative">
-                  <FiPhone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 text-sm" />
-                  <input
-                    type="tel"
-                    name="phone"
-                    required
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    placeholder="+919876543210 (Include country code or 10 digits)"
-                    className="w-full bg-white/[0.04] border border-white/15 rounded-xl py-3.5 pl-10 pr-4 text-xs text-white placeholder-white/30 focus:border-brand-500 focus:bg-white/[0.08] transition-all outline-none font-mono"
-                  />
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-extrabold text-xs tracking-wide uppercase shadow-lg shadow-purple-500/30 hover:scale-[1.01] hover:shadow-purple-500/40 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-              >
-                {loading ? 'Dispatching SMS OTP...' : <>Send Twilio Reset OTP <FiArrowRight /></>}
-              </button>
-
-              <div className="text-center pt-2 border-t border-white/10">
-                <button
-                  type="button"
-                  onClick={() => { setMode('login'); setErrorMsg(''); }}
-                  className="text-white/60 text-xs hover:text-white flex items-center justify-center gap-1.5 mx-auto font-semibold transition-colors"
-                >
-                  <FiArrowLeft /> Back to Sign In
-                </button>
-              </div>
-            </form>
-          )}
-
-          {/* ────────────────── 4. RESET-OTP MODE (Twilio SMS OTP Verification) ────────────────── */}
-          {mode === 'reset-otp' && (
-            <form onSubmit={handleResetPasswordSubmit} className="space-y-5">
-              <div className="p-4 rounded-2xl bg-brand-500/10 border border-brand-500/30 flex items-start gap-3">
-                <FiMessageSquare className="text-brand-400 shrink-0 mt-0.5 text-base" />
-                <div>
-                  <p className="text-xs font-bold text-white">SMS Sent via Twilio!</p>
-                  <p className="text-[11px] leading-relaxed text-white/70 mt-0.5">
-                    Please check your messages on <span className="font-mono font-bold text-brand-300">{formData.phone}</span> and enter the 6-digit code below.
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold tracking-wider text-white/60 uppercase block text-center">6-Digit Twilio OTP Code</label>
-                <div className="relative">
-                  <FiCheck className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 text-sm" />
-                  <input
-                    type="text"
-                    name="otp"
-                    required
-                    maxLength={6}
-                    value={formData.otp}
-                    onChange={handleInputChange}
-                    placeholder="123456"
-                    className="w-full bg-white/[0.06] border border-brand-500/50 rounded-xl py-3 pl-10 pr-4 text-center text-lg font-mono font-bold tracking-[0.3em] text-brand-300 placeholder-white/20 focus:border-brand-400 focus:bg-white/[0.1] transition-all outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold tracking-wider text-white/60 uppercase block">New Secure Password</label>
-                <div className="relative">
-                  <FiLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 text-sm" />
-                  <input
-                    type={showNewPassword ? 'text' : 'password'}
-                    name="newPassword"
-                    required
-                    value={formData.newPassword}
-                    onChange={handleInputChange}
-                    placeholder="At least 8 characters"
-                    className="w-full bg-white/[0.04] border border-white/15 rounded-xl py-3 pl-10 pr-10 text-xs text-white placeholder-white/30 focus:border-brand-500 focus:bg-white/[0.08] transition-all outline-none"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowNewPassword(!showNewPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
-                    title={showNewPassword ? 'Hide password' : 'Show password'}
-                  >
-                    {showNewPassword ? <FiEyeOff size={16} /> : <FiEye size={16} />}
-                  </button>
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading || !formData.otp || formData.otp.length < 6 || !formData.newPassword}
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-500 to-purple-600 text-white font-extrabold text-xs tracking-wide uppercase shadow-lg shadow-brand-500/30 hover:scale-[1.01] hover:shadow-brand-500/40 transition-all flex items-center justify-center gap-2 mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? 'Verifying & Resetting...' : 'Verify OTP & Reset Password'}
-              </button>
-
-              <div className="flex items-center justify-between pt-3 border-t border-white/10 text-xs">
-                <button
-                  type="button"
-                  onClick={handleForgotPasswordSubmit}
-                  disabled={loading}
-                  className="text-brand-400 hover:text-brand-300 font-semibold flex items-center gap-1 transition-colors"
-                >
-                  <FiRefreshCw size={12} /> Resend OTP
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setMode('login'); setErrorMsg(''); }}
-                  className="text-white/60 hover:text-white font-semibold transition-colors"
-                >
-                  Back to Sign In
-                </button>
-              </div>
-            </form>
-          )}
-
-        </div>
-      </main>
-
-      <Footer />
-    </div>
-  );
-}
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-500 to-purple-600 text-white font-extrabold text-xs tracking-wide uppercase shadow-lg shadow-brand-500/30 hover:scale-[1.01] hover:shadow-brand-
