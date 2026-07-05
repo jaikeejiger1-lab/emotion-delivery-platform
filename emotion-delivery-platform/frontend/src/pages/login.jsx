@@ -434,4 +434,118 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-500 to-purple-600 text-white font-extrabold text-xs tracking-wide uppercase shadow-lg shadow-brand-500/30 hover:scale-[1.01] hover:shadow-brand-
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-500 to-purple-600 text-white font-extrabold text-xs tracking-wide uppercase shadow-lg shadow-brand-500/30 hover:scale-[1.01] hover:shadow-brand-500/40 transition-all flex items-center justify-center gap-2 mt-4 disabled:opacity-50"
+              >
+                {loading ? 'Creating Account...' : <>Sign Up <FiArrowRight /></>}
+              </button>
+            </form>
+          )}
+
+          {/* ────────────────── 3. FORGOT PASSWORD MODE ────────────────── */}
+          {mode === 'forgot' && (
+            <form onSubmit={handleForgotPasswordSubmit} className="space-y-5">
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold tracking-wider text-white/60 uppercase block">Phone Number</label>
+                <div className="relative">
+                  <FiPhone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 text-sm" />
+                  <input
+                    type="tel"
+                    name="phone"
+                    required
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    placeholder="+919876543210"
+                    className="w-full bg-white/[0.04] border border-white/15 rounded-xl py-3 pl-10 pr-4 text-xs text-white placeholder-white/30 focus:border-brand-500 focus:bg-white/[0.08] transition-all outline-none"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-500 to-purple-600 text-white font-extrabold text-xs tracking-wide uppercase shadow-lg shadow-brand-500/30 hover:scale-[1.01] hover:shadow-brand-500/40 transition-all flex items-center justify-center gap-2 mt-2 disabled:opacity-50"
+              >
+                {loading ? 'Sending OTP...' : <>Send SMS Code <FiArrowRight /></>}
+              </button>
+
+              <div className="text-center pt-4 border-t border-white/10 mt-6">
+                <button
+                  type="button"
+                  onClick={() => { setMode('login'); setErrorMsg(''); }}
+                  className="text-xs text-white/50 hover:text-white transition-colors flex items-center justify-center gap-1 mx-auto"
+                >
+                  <FiArrowLeft /> Back to Sign In
+                </button>
+              </div>
+            </form>
+          )}
+
+          {/* ────────────────── 4. RESET OTP MODE ────────────────── */}
+          {mode === 'reset-otp' && (
+            <form onSubmit={handleResetPasswordSubmit} className="space-y-5">
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold tracking-wider text-white/60 uppercase block">6-Digit SMS Code</label>
+                <div className="relative">
+                  <FiKey className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 text-sm" />
+                  <input
+                    type="text"
+                    name="otp"
+                    required
+                    value={formData.otp}
+                    onChange={handleInputChange}
+                    placeholder="123456"
+                    className="w-full bg-white/[0.04] border border-white/15 rounded-xl py-3 pl-10 pr-4 text-xs text-white tracking-widest placeholder-white/30 focus:border-brand-500 focus:bg-white/[0.08] transition-all outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold tracking-wider text-white/60 uppercase block">New Password</label>
+                <div className="relative">
+                  <FiLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 text-sm" />
+                  <input
+                    type={showNewPassword ? 'text' : 'password'}
+                    name="newPassword"
+                    required
+                    value={formData.newPassword}
+                    onChange={handleInputChange}
+                    placeholder="Min 8 characters"
+                    className="w-full bg-white/[0.04] border border-white/15 rounded-xl py-3 pl-10 pr-10 text-xs text-white placeholder-white/30 focus:border-brand-500 focus:bg-white/[0.08] transition-all outline-none"
+                  />
+                   <button
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
+                  >
+                    {showNewPassword ? <FiEyeOff size={16} /> : <FiEye size={16} />}
+                  </button>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-500 to-purple-600 text-white font-extrabold text-xs tracking-wide uppercase shadow-lg shadow-brand-500/30 hover:scale-[1.01] hover:shadow-brand-500/40 transition-all flex items-center justify-center gap-2 mt-2 disabled:opacity-50"
+              >
+                {loading ? 'Resetting Password...' : <>Confirm New Password <FiCheck /></>}
+              </button>
+
+              <div className="text-center pt-4 border-t border-white/10 mt-6">
+                <button
+                  type="button"
+                  onClick={() => { setMode('login'); setErrorMsg(''); }}
+                  className="text-xs text-white/50 hover:text-white transition-colors flex items-center justify-center gap-1 mx-auto"
+                >
+                  <FiArrowLeft /> Cancel and Return to Login
+                </button>
+              </div>
+            </form>
+          )}
+
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  );
+}
