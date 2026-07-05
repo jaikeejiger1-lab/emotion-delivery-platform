@@ -33,7 +33,6 @@ export default function LoginPage() {
   const searchParams = useSearchParams();
   const { login, register, forgotPassword, verifyOtpReset, isAuthenticated, user } = useAuth();
 
-  // Navigation modes: 'login' | 'register' | 'forgot' | 'reset-otp'
   const [mode, setMode] = useState('login');
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -50,14 +49,12 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  // Handle verified query parameter redirect from email link
   useEffect(() => {
     if (searchParams && searchParams.get('verified') === 'true') {
       toast.success('Email verified successfully! You can now log in. 🎉', { duration: 6000 });
     }
   }, [searchParams]);
 
-  // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated && user) {
       if (['admin', 'superadmin'].includes(user.role)) {
@@ -84,7 +81,6 @@ export default function LoginPage() {
     setErrorMsg('');
   };
 
-  // 1. Handle Login
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     if (!formData.email || !formData.password) {
@@ -102,7 +98,6 @@ export default function LoginPage() {
     }
   };
 
-  // 2. Handle Registration (Disabled by Admin)
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
     if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) {
@@ -125,13 +120,12 @@ export default function LoginPage() {
         setFormData((prev) => ({ ...prev, password: '' }));
       }
     } catch (err) {
-      setErrorMsg(err.response?.data?.message || err.message || 'Public registration is disabled.');
+      setErrorMsg(err.response?.data?.message || err.message || 'Registration failed.');
     } finally {
       setLoading(false);
     }
   };
 
-  // 3. Handle Twilio OTP Request (Forgot Password)
   const handleForgotPasswordSubmit = async (e) => {
     e.preventDefault();
     if (!formData.phone) {
@@ -141,7 +135,6 @@ export default function LoginPage() {
     setLoading(true);
     setErrorMsg('');
     try {
-      // ✅ FIXED: Clean Base URL directly mapped to Render
       const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://emotion-delivery-platform.onrender.com/api';
       const res = await fetch(`${baseUrl}/auth/forgot-password`, {
         method: 'POST',
@@ -159,7 +152,6 @@ export default function LoginPage() {
     }
   };
 
-  // 4. Handle Twilio OTP Verification & Password Reset
   const handleResetPasswordSubmit = async (e) => {
     e.preventDefault();
     if (!formData.otp || !formData.newPassword) {
@@ -173,7 +165,6 @@ export default function LoginPage() {
     setLoading(true);
     setErrorMsg('');
     try {
-      // ✅ FIXED: Clean Base URL directly mapped to Render
       const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://emotion-delivery-platform.onrender.com/api';
       const res = await fetch(`${baseUrl}/auth/verify-otp-reset`, {
         method: 'POST',
@@ -193,7 +184,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0D0D1A] text-white selection:bg-brand-500 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900 dark:bg-[#0D0D1A] dark:text-white selection:bg-brand-500 selection:text-white transition-colors duration-300">
       <Head>
         <title>Sign In / Reset Password — Emotion Delivery Platform</title>
       </Head>
@@ -201,13 +192,11 @@ export default function LoginPage() {
       <Navbar />
 
       <main className="flex-grow flex items-center justify-center py-16 px-4 relative overflow-hidden">
-        {/* Ambient Glow Backgrounds */}
         <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-brand-500/15 blur-[120px] pointer-events-none" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-purple-600/15 blur-[120px] pointer-events-none" />
 
-        <div className="max-w-md w-full bg-[#14142B]/80 backdrop-blur-2xl border border-white/15 p-8 sm:p-10 rounded-3xl shadow-2xl relative z-10 transition-all duration-300">
-          
-          {/* Header Section */}
+        <div className="max-w-md w-full bg-white/90 dark:bg-[#14142B]/80 backdrop-blur-2xl border border-gray-200 dark:border-white/15 p-8 sm:p-10 rounded-3xl shadow-2xl relative z-10 transition-all duration-300">
+
           <div className="text-center mb-8">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-brand-500 to-purple-600 flex items-center justify-center text-2xl mx-auto mb-4 shadow-lg shadow-brand-500/30">
               {mode === 'login' && '👋'}
@@ -216,14 +205,14 @@ export default function LoginPage() {
               {mode === 'reset-otp' && '🔐'}
             </div>
 
-            <h1 className="font-display text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-white via-pink-200 to-pink-400 bg-clip-text text-transparent">
+            <h1 className="font-display text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-gray-900 dark:from-white via-pink-500 dark:via-pink-200 to-pink-600 dark:to-pink-400 bg-clip-text text-transparent">
               {mode === 'login' && 'Welcome Back'}
               {mode === 'register' && 'Create Your Account'}
               {mode === 'forgot' && 'Forgot Password?'}
               {mode === 'reset-otp' && 'Enter Twilio OTP'}
             </h1>
 
-            <p className="text-xs sm:text-sm text-white/60 mt-2 leading-relaxed">
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-white/60 mt-2 leading-relaxed">
               {mode === 'login' && 'Sign in to access your custom gift builds and live GPS tracking.'}
               {mode === 'register' && 'Join India’s premier emotion delivery and memory curation platform.'}
               {mode === 'forgot' && 'Enter your registered phone number to receive a secure 6-digit SMS code.'}
@@ -231,31 +220,28 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* Verification Alert Banner */}
           {mode === 'login' && (
             <div className="mb-6 p-4 rounded-2xl bg-brand-500/10 border border-brand-500/30 flex items-start gap-3">
               <FiShield className="text-brand-400 shrink-0 mt-0.5 text-base" />
-              <p className="text-[11px] leading-relaxed text-white/80">
+              <p className="text-[11px] leading-relaxed text-gray-700 dark:text-white/80">
                 <strong>Email Verification Required:</strong> For your security, unverified accounts cannot sign in. Please verify via the link sent to your inbox.
               </p>
             </div>
           )}
 
-          {/* Error Message Box */}
           {errorMsg && (
-            <div className="mb-6 p-4 rounded-2xl bg-red-500/15 border border-red-500/30 text-red-300 flex items-start gap-3 animate-shake">
+            <div className="mb-6 p-4 rounded-2xl bg-red-500/15 border border-red-500/30 text-red-500 dark:text-red-300 flex items-start gap-3 animate-shake">
               <FiAlertCircle className="shrink-0 mt-0.5 text-base text-red-400" />
               <span className="text-xs leading-relaxed font-semibold">{errorMsg}</span>
             </div>
           )}
 
-          {/* ────────────────── 1. LOGIN MODE ────────────────── */}
           {mode === 'login' && (
             <form onSubmit={handleLoginSubmit} className="space-y-5">
               <div className="space-y-1.5">
-                <label className="text-[11px] font-bold tracking-wider text-white/60 uppercase block">Email Address</label>
+                <label className="text-[11px] font-bold tracking-wider text-gray-500 dark:text-white/60 uppercase block">Email Address</label>
                 <div className="relative">
-                  <FiMail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 text-sm" />
+                  <FiMail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40 text-sm" />
                   <input
                     type="email"
                     name="email"
@@ -263,14 +249,14 @@ export default function LoginPage() {
                     value={formData.email}
                     onChange={handleInputChange}
                     placeholder="name@example.com"
-                    className="w-full bg-white/[0.04] border border-white/15 rounded-xl py-3 pl-10 pr-4 text-xs text-white placeholder-white/30 focus:border-brand-500 focus:bg-white/[0.08] transition-all outline-none"
+                    className="w-full bg-black/[0.03] dark:bg-white/[0.04] border border-gray-200 dark:border-white/15 rounded-xl py-3 pl-10 pr-4 text-xs text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/30 focus:border-brand-500 focus:bg-white dark:focus:bg-white/[0.08] transition-all outline-none"
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
                 <div className="flex justify-between items-center">
-                  <label className="text-[11px] font-bold tracking-wider text-white/60 uppercase block">Password</label>
+                  <label className="text-[11px] font-bold tracking-wider text-gray-500 dark:text-white/60 uppercase block">Password</label>
                   <button
                     type="button"
                     onClick={() => { setMode('forgot'); setErrorMsg(''); }}
@@ -280,7 +266,7 @@ export default function LoginPage() {
                   </button>
                 </div>
                 <div className="relative">
-                  <FiLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 text-sm" />
+                  <FiLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40 text-sm" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     name="password"
@@ -288,12 +274,12 @@ export default function LoginPage() {
                     value={formData.password}
                     onChange={handleInputChange}
                     placeholder="••••••••"
-                    className="w-full bg-white/[0.04] border border-white/15 rounded-xl py-3 pl-10 pr-10 text-xs text-white placeholder-white/30 focus:border-brand-500 focus:bg-white/[0.08] transition-all outline-none"
+                    className="w-full bg-black/[0.03] dark:bg-white/[0.04] border border-gray-200 dark:border-white/15 rounded-xl py-3 pl-10 pr-10 text-xs text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/30 focus:border-brand-500 focus:bg-white dark:focus:bg-white/[0.08] transition-all outline-none"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40 hover:text-gray-700 dark:hover:text-white transition-colors"
                     title={showPassword ? 'Hide password' : 'Show password'}
                   >
                     {showPassword ? <FiEyeOff size={16} /> : <FiEye size={16} />}
@@ -309,33 +295,39 @@ export default function LoginPage() {
                 {loading ? 'Signing In...' : <>Sign In <FiArrowRight /></>}
               </button>
 
-              <div className="pt-4 border-t border-white/10 mt-6">
+              <div className="pt-4 border-t border-gray-200 dark:border-white/10 mt-6">
                 <button
                   type="button"
                   onClick={() => { setMode('forgot'); setErrorMsg(''); }}
-                  className="w-full py-3 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-purple-300 font-bold text-xs flex items-center justify-center gap-2 transition-all group shadow-sm"
+                  className="w-full py-3 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-purple-600 dark:text-purple-300 font-bold text-xs flex items-center justify-center gap-2 transition-all group shadow-sm"
                 >
                   <FiMessageSquare className="group-hover:scale-110 transition-transform" />
                   <span>Reset Password via Twilio SMS OTP</span>
                 </button>
               </div>
 
-              <div className="text-center pt-2">
-                <p className="text-xs text-white/40 italic">
-                  🔒 Public registration is locked for deployment. Authorized personnel only.
+              <div className="text-center pt-4 mt-2">
+                <p className="text-xs text-gray-600 dark:text-white/60">
+                  Don't have an account?{' '}
+                  <button
+                    type="button"
+                    onClick={() => { setMode('register'); setErrorMsg(''); }}
+                    className="font-bold text-brand-500 hover:text-brand-400 transition-colors"
+                  >
+                    Sign Up
+                  </button>
                 </p>
               </div>
             </form>
           )}
 
-          {/* ────────────────── 2. REGISTER MODE ────────────────── */}
           {mode === 'register' && (
             <form onSubmit={handleRegisterSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold tracking-wider text-white/60 uppercase block">First Name</label>
+                  <label className="text-[10px] font-bold tracking-wider text-gray-500 dark:text-white/60 uppercase block">First Name</label>
                   <div className="relative">
-                    <FiUser className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40" size={13} />
+                    <FiUser className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40" size={13} />
                     <input
                       type="text"
                       name="firstName"
@@ -343,12 +335,12 @@ export default function LoginPage() {
                       value={formData.firstName}
                       onChange={handleInputChange}
                       placeholder="John"
-                      className="w-full bg-white/[0.04] border border-white/15 rounded-xl py-2.5 pl-9 pr-3 text-xs text-white placeholder-white/30 focus:border-brand-500 focus:bg-white/[0.08] transition-all outline-none"
+                      className="w-full bg-black/[0.03] dark:bg-white/[0.04] border border-gray-200 dark:border-white/15 rounded-xl py-2.5 pl-9 pr-3 text-xs text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/30 focus:border-brand-500 focus:bg-white dark:focus:bg-white/[0.08] transition-all outline-none"
                     />
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold tracking-wider text-white/60 uppercase block">Last Name</label>
+                  <label className="text-[10px] font-bold tracking-wider text-gray-500 dark:text-white/60 uppercase block">Last Name</label>
                   <input
                     type="text"
                     name="lastName"
@@ -356,15 +348,15 @@ export default function LoginPage() {
                     value={formData.lastName}
                     onChange={handleInputChange}
                     placeholder="Doe"
-                    className="w-full bg-white/[0.04] border border-white/15 rounded-xl py-2.5 px-3 text-xs text-white placeholder-white/30 focus:border-brand-500 focus:bg-white/[0.08] transition-all outline-none"
+                    className="w-full bg-black/[0.03] dark:bg-white/[0.04] border border-gray-200 dark:border-white/15 rounded-xl py-2.5 px-3 text-xs text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/30 focus:border-brand-500 focus:bg-white dark:focus:bg-white/[0.08] transition-all outline-none"
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold tracking-wider text-white/60 uppercase block">Email Address</label>
+                <label className="text-[10px] font-bold tracking-wider text-gray-500 dark:text-white/60 uppercase block">Email Address</label>
                 <div className="relative">
-                  <FiMail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40" />
+                  <FiMail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40" />
                   <input
                     type="email"
                     name="email"
@@ -372,15 +364,15 @@ export default function LoginPage() {
                     value={formData.email}
                     onChange={handleInputChange}
                     placeholder="name@domain.com"
-                    className="w-full bg-white/[0.04] border border-white/15 rounded-xl py-2.5 pl-10 pr-4 text-xs text-white placeholder-white/30 focus:border-brand-500 focus:bg-white/[0.08] transition-all outline-none"
+                    className="w-full bg-black/[0.03] dark:bg-white/[0.04] border border-gray-200 dark:border-white/15 rounded-xl py-2.5 pl-10 pr-4 text-xs text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/30 focus:border-brand-500 focus:bg-white dark:focus:bg-white/[0.08] transition-all outline-none"
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold tracking-wider text-white/60 uppercase block">Phone Number (For OTP)</label>
+                <label className="text-[10px] font-bold tracking-wider text-gray-500 dark:text-white/60 uppercase block">Phone Number (For OTP)</label>
                 <div className="relative">
-                  <FiPhone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40" />
+                  <FiPhone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40" />
                   <input
                     type="tel"
                     name="phone"
@@ -388,15 +380,15 @@ export default function LoginPage() {
                     value={formData.phone}
                     onChange={handleInputChange}
                     placeholder="+919876543210"
-                    className="w-full bg-white/[0.04] border border-white/15 rounded-xl py-2.5 pl-10 pr-4 text-xs text-white placeholder-white/30 focus:border-brand-500 focus:bg-white/[0.08] transition-all outline-none"
+                    className="w-full bg-black/[0.03] dark:bg-white/[0.04] border border-gray-200 dark:border-white/15 rounded-xl py-2.5 pl-10 pr-4 text-xs text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/30 focus:border-brand-500 focus:bg-white dark:focus:bg-white/[0.08] transition-all outline-none"
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold tracking-wider text-white/60 uppercase block">Password</label>
+                <label className="text-[10px] font-bold tracking-wider text-gray-500 dark:text-white/60 uppercase block">Password</label>
                 <div className="relative">
-                  <FiLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40" />
+                  <FiLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     name="password"
@@ -404,12 +396,12 @@ export default function LoginPage() {
                     value={formData.password}
                     onChange={handleInputChange}
                     placeholder="Min 8 characters"
-                    className="w-full bg-white/[0.04] border border-white/15 rounded-xl py-2.5 pl-10 pr-10 text-xs text-white placeholder-white/30 focus:border-brand-500 focus:bg-white/[0.08] transition-all outline-none"
+                    className="w-full bg-black/[0.03] dark:bg-white/[0.04] border border-gray-200 dark:border-white/15 rounded-xl py-2.5 pl-10 pr-10 text-xs text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/30 focus:border-brand-500 focus:bg-white dark:focus:bg-white/[0.08] transition-all outline-none"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40 hover:text-gray-700 dark:hover:text-white transition-colors"
                     title={showPassword ? 'Hide password' : 'Show password'}
                   >
                     {showPassword ? <FiEyeOff size={16} /> : <FiEye size={16} />}
@@ -418,19 +410,18 @@ export default function LoginPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold tracking-wider text-white/60 uppercase block">Account Type</label>
+                <label className="text-[10px] font-bold tracking-wider text-gray-500 dark:text-white/60 uppercase block">Account Type</label>
                 <select
                   name="role"
                   value={formData.role}
                   onChange={handleInputChange}
-                  className="w-full bg-white/[0.04] border border-white/15 rounded-xl py-2.5 px-3.5 text-xs text-white focus:border-brand-500 focus:bg-white/[0.08] transition-all outline-none appearance-none"
+                  className="w-full bg-black/[0.03] dark:bg-white/[0.04] border border-gray-200 dark:border-white/15 rounded-xl py-2.5 px-3.5 text-xs text-gray-900 dark:text-white focus:border-brand-500 focus:bg-white dark:focus:bg-white/[0.08] transition-all outline-none appearance-none"
                 >
-                  <option className="bg-[#14142B]" value="customer">Client (Send Gifts & Memories)</option>
-                  <option className="bg-[#14142B]" value="delivery">Delivery Agent (Courier Services)</option>
+                  <option className="bg-white dark:bg-[#14142B]" value="customer">Client (Send Gifts & Memories)</option>
+                  <option className="bg-white dark:bg-[#14142B]" value="delivery">Delivery Agent (Courier Services)</option>
                 </select>
               </div>
 
-              {/* ✅ FIXED: Completed the button and missing closing tags */}
               <button
                 type="submit"
                 disabled={loading}
@@ -438,16 +429,25 @@ export default function LoginPage() {
               >
                 {loading ? 'Creating Account...' : <>Sign Up <FiArrowRight /></>}
               </button>
+
+              <div className="text-center pt-2">
+                <button
+                  type="button"
+                  onClick={() => { setMode('login'); setErrorMsg(''); }}
+                  className="text-xs text-gray-500 dark:text-white/50 hover:text-gray-800 dark:hover:text-white transition-colors flex items-center justify-center gap-1 mx-auto"
+                >
+                  <FiArrowLeft /> Back to Sign In
+                </button>
+              </div>
             </form>
           )}
 
-          {/* ────────────────── 3. FORGOT PASSWORD MODE ────────────────── */}
           {mode === 'forgot' && (
             <form onSubmit={handleForgotPasswordSubmit} className="space-y-5">
               <div className="space-y-1.5">
-                <label className="text-[11px] font-bold tracking-wider text-white/60 uppercase block">Phone Number</label>
+                <label className="text-[11px] font-bold tracking-wider text-gray-500 dark:text-white/60 uppercase block">Phone Number</label>
                 <div className="relative">
-                  <FiPhone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 text-sm" />
+                  <FiPhone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40 text-sm" />
                   <input
                     type="tel"
                     name="phone"
@@ -455,7 +455,7 @@ export default function LoginPage() {
                     value={formData.phone}
                     onChange={handleInputChange}
                     placeholder="+919876543210"
-                    className="w-full bg-white/[0.04] border border-white/15 rounded-xl py-3 pl-10 pr-4 text-xs text-white placeholder-white/30 focus:border-brand-500 focus:bg-white/[0.08] transition-all outline-none"
+                    className="w-full bg-black/[0.03] dark:bg-white/[0.04] border border-gray-200 dark:border-white/15 rounded-xl py-3 pl-10 pr-4 text-xs text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/30 focus:border-brand-500 focus:bg-white dark:focus:bg-white/[0.08] transition-all outline-none"
                   />
                 </div>
               </div>
@@ -468,11 +468,11 @@ export default function LoginPage() {
                 {loading ? 'Sending OTP...' : <>Send SMS Code <FiArrowRight /></>}
               </button>
 
-              <div className="text-center pt-4 border-t border-white/10 mt-6">
+              <div className="text-center pt-4 border-t border-gray-200 dark:border-white/10 mt-6">
                 <button
                   type="button"
                   onClick={() => { setMode('login'); setErrorMsg(''); }}
-                  className="text-xs text-white/50 hover:text-white transition-colors flex items-center justify-center gap-1 mx-auto"
+                  className="text-xs text-gray-500 dark:text-white/50 hover:text-gray-800 dark:hover:text-white transition-colors flex items-center justify-center gap-1 mx-auto"
                 >
                   <FiArrowLeft /> Back to Sign In
                 </button>
@@ -480,13 +480,12 @@ export default function LoginPage() {
             </form>
           )}
 
-          {/* ────────────────── 4. RESET OTP MODE ────────────────── */}
           {mode === 'reset-otp' && (
             <form onSubmit={handleResetPasswordSubmit} className="space-y-5">
               <div className="space-y-1.5">
-                <label className="text-[11px] font-bold tracking-wider text-white/60 uppercase block">6-Digit SMS Code</label>
+                <label className="text-[11px] font-bold tracking-wider text-gray-500 dark:text-white/60 uppercase block">6-Digit SMS Code</label>
                 <div className="relative">
-                  <FiKey className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 text-sm" />
+                  <FiKey className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40 text-sm" />
                   <input
                     type="text"
                     name="otp"
@@ -494,15 +493,15 @@ export default function LoginPage() {
                     value={formData.otp}
                     onChange={handleInputChange}
                     placeholder="123456"
-                    className="w-full bg-white/[0.04] border border-white/15 rounded-xl py-3 pl-10 pr-4 text-xs text-white tracking-widest placeholder-white/30 focus:border-brand-500 focus:bg-white/[0.08] transition-all outline-none"
+                    className="w-full bg-black/[0.03] dark:bg-white/[0.04] border border-gray-200 dark:border-white/15 rounded-xl py-3 pl-10 pr-4 text-xs text-gray-900 dark:text-white tracking-widest placeholder-gray-400 dark:placeholder-white/30 focus:border-brand-500 focus:bg-white dark:focus:bg-white/[0.08] transition-all outline-none"
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[11px] font-bold tracking-wider text-white/60 uppercase block">New Password</label>
+                <label className="text-[11px] font-bold tracking-wider text-gray-500 dark:text-white/60 uppercase block">New Password</label>
                 <div className="relative">
-                  <FiLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 text-sm" />
+                  <FiLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40 text-sm" />
                   <input
                     type={showNewPassword ? 'text' : 'password'}
                     name="newPassword"
@@ -510,12 +509,12 @@ export default function LoginPage() {
                     value={formData.newPassword}
                     onChange={handleInputChange}
                     placeholder="Min 8 characters"
-                    className="w-full bg-white/[0.04] border border-white/15 rounded-xl py-3 pl-10 pr-10 text-xs text-white placeholder-white/30 focus:border-brand-500 focus:bg-white/[0.08] transition-all outline-none"
+                    className="w-full bg-black/[0.03] dark:bg-white/[0.04] border border-gray-200 dark:border-white/15 rounded-xl py-3 pl-10 pr-10 text-xs text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/30 focus:border-brand-500 focus:bg-white dark:focus:bg-white/[0.08] transition-all outline-none"
                   />
                    <button
                     type="button"
                     onClick={() => setShowNewPassword(!showNewPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40 hover:text-gray-700 dark:hover:text-white transition-colors"
                   >
                     {showNewPassword ? <FiEyeOff size={16} /> : <FiEye size={16} />}
                   </button>
@@ -530,11 +529,11 @@ export default function LoginPage() {
                 {loading ? 'Resetting Password...' : <>Confirm New Password <FiCheck /></>}
               </button>
 
-              <div className="text-center pt-4 border-t border-white/10 mt-6">
+              <div className="text-center pt-4 border-t border-gray-200 dark:border-white/10 mt-6">
                 <button
                   type="button"
                   onClick={() => { setMode('login'); setErrorMsg(''); }}
-                  className="text-xs text-white/50 hover:text-white transition-colors flex items-center justify-center gap-1 mx-auto"
+                  className="text-xs text-gray-500 dark:text-white/50 hover:text-gray-800 dark:hover:text-white transition-colors flex items-center justify-center gap-1 mx-auto"
                 >
                   <FiArrowLeft /> Cancel and Return to Login
                 </button>
