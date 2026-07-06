@@ -41,6 +41,14 @@
     min-height: 100vh;
   }
 
+  /* ── Explicit dark mode body (html.dark) — aligns with Tailwind darkMode: 'class' ── */
+  html.dark body {
+    @apply bg-dark-900 text-white;
+    background-image:
+      radial-gradient(ellipse at 20% 50%, rgba(232, 93, 154, 0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 60%);
+  }
+
   ::selection {
     background: rgba(232, 93, 154, 0.3);
     color: #fff;
@@ -166,7 +174,9 @@
 }
 
 /* ── Light Theme Adaptations & Uniform Toast Styling ───────────── */
-.light-theme {
+/* Triggers on both the manual .light-theme class AND when html.dark is absent */
+.light-theme,
+html:not(.dark) {
   --toast-bg:      rgba(255, 255, 255, 0.96);
   --toast-color:   #1A1A3E;
   --toast-border:  rgba(0, 0, 0, 0.1);
@@ -174,7 +184,8 @@
   --glass-border:  rgba(0, 0, 0, 0.08);
 }
 
-.light-theme body {
+.light-theme body,
+html:not(.dark) body {
   background-color: #F8F9FC !important;
   color: #1A1A3E !important;
   background-image:
@@ -182,7 +193,8 @@
     radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.05) 0%, transparent 60%) !important;
 }
 
-.light-theme .glass-card {
+.light-theme .glass-card,
+html:not(.dark) .glass-card {
   background: var(--glass-bg) !important;
   border: 1px solid var(--glass-border) !important;
   box-shadow: 0 8px 32px rgba(31, 38, 135, 0.07) !important;
@@ -191,12 +203,16 @@
 
 .light-theme header,
 .light-theme nav,
-.light-theme aside {
+.light-theme aside,
+html:not(.dark) header,
+html:not(.dark) nav,
+html:not(.dark) aside {
   background-color: rgba(255, 255, 255, 0.85) !important;
   border-color: rgba(0, 0, 0, 0.08) !important;
 }
 
-.light-theme .text-white {
+.light-theme .text-white,
+html:not(.dark) .text-white {
   color: #1A1A3E !important;
 }
 
@@ -204,7 +220,12 @@
 .light-theme .text-white\/50,
 .light-theme .text-white\/60,
 .light-theme .text-white\/70,
-.light-theme .text-white\/80 {
+.light-theme .text-white\/80,
+html:not(.dark) .text-white\/40,
+html:not(.dark) .text-white\/50,
+html:not(.dark) .text-white\/60,
+html:not(.dark) .text-white\/70,
+html:not(.dark) .text-white\/80 {
   color: #5A5A7A !important;
 }
 
@@ -212,14 +233,22 @@
 .light-theme .bg-white\/\[0\.04\],
 .light-theme .bg-white\/\[0\.06\],
 .light-theme .bg-white\/5,
-.light-theme .bg-white\/10 {
+.light-theme .bg-white\/10,
+html:not(.dark) .bg-white\/\[0\.03\],
+html:not(.dark) .bg-white\/\[0\.04\],
+html:not(.dark) .bg-white\/\[0\.06\],
+html:not(.dark) .bg-white\/5,
+html:not(.dark) .bg-white\/10 {
   background-color: rgba(0, 0, 0, 0.04) !important;
   border-color: rgba(0, 0, 0, 0.08) !important;
 }
 
 .light-theme input,
 .light-theme textarea,
-.light-theme select {
+.light-theme select,
+html:not(.dark) input,
+html:not(.dark) textarea,
+html:not(.dark) select {
   background-color: rgba(255, 255, 255, 0.9) !important;
   color: #1A1A3E !important;
   border-color: rgba(0, 0, 0, 0.15) !important;

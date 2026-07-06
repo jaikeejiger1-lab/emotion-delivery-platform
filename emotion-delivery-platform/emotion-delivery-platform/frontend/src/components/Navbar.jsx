@@ -36,10 +36,12 @@ const Navbar = () => {
     setMounted(true);
     const saved = localStorage.getItem('edp_theme') || 'dark';
     setTheme(saved);
-    if (saved === 'light') {
-      document.documentElement.classList.add('light-theme');
-    } else {
+    if (saved === 'dark') {
+      document.documentElement.classList.add('dark');
       document.documentElement.classList.remove('light-theme');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light-theme');
     }
   }, []);
 
@@ -64,12 +66,14 @@ const Navbar = () => {
     const next = theme === 'dark' ? 'light' : 'dark';
     setTheme(next);
     localStorage.setItem('edp_theme', next);
-    if (next === 'light') {
-      document.documentElement.classList.add('light-theme');
-      toast('Switched to Light Theme ☀️');
-    } else {
+    if (next === 'dark') {
+      document.documentElement.classList.add('dark');
       document.documentElement.classList.remove('light-theme');
       toast('Switched to Dark Theme 🌙');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light-theme');
+      toast('Switched to Light Theme ☀️');
     }
   };
 

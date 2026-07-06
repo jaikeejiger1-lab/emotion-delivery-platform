@@ -1,8 +1,8 @@
 /**
- * login.jsx — High-Fidelity Glassmorphic Authentication & Twilio SMS OTP Reset Portal
+ * login.jsx — Glassmorphic Authentication & Twilio SMS OTP Reset Portal
  *
- * This is the Next.js React component for handling User Sign In, Registration,
- * and Twilio SMS OTP Password Recovery.
+ * Handles: User Sign In and Twilio SMS OTP Password Recovery.
+ * Note: Public registration is disabled. Accounts are admin-created only.
  */
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
@@ -14,7 +14,6 @@ import toast from 'react-hot-toast';
 import {
   FiMail,
   FiLock,
-  FiUser,
   FiPhone,
   FiCheck,
   FiArrowRight,
@@ -22,16 +21,16 @@ import {
   FiAlertCircle,
   FiKey,
   FiMessageSquare,
-  FiRefreshCw,
   FiArrowLeft,
   FiEye,
   FiEyeOff,
 } from 'react-icons/fi';
 
+
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { login, register, forgotPassword, verifyOtpReset, isAuthenticated, user } = useAuth();
+  const { login, forgotPassword, verifyOtpReset, isAuthenticated, user } = useAuth();
 
   const [mode, setMode] = useState('login');
   const [showPassword, setShowPassword] = useState(false);
@@ -92,39 +91,19 @@ export default function LoginPage() {
     try {
       await login(formData.email, formData.password);
     } catch (err) {
-      setErrorMsg(err.response?.data?.message || err.message || 'Login failed. Please verify your email and password.');
+      const msg = err.response?.data?.message || err.message || '';
+      // Surface 403 / account-not-authorized errors clearly
+      if (err.response?.status === 403 || msg.toLowerCase().includes('not authorized') || msg.toLowerCase().includes('disabled')) {
+        setErrorMsg('Access denied. This platform is restricted to authorized accounts only. Contact an administrator.');
+      } else {
+        setErrorMsg(msg || 'Login failed. Please verify your email and password.');
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const handleRegisterSubmit = async (e) => {
-    e.preventDefault();
-    if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) {
-      setErrorMsg('Please fill in all required fields.');
-      return;
-    }
-    setLoading(true);
-    setErrorMsg('');
-    try {
-      const res = await register({
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        phone: formData.phone || undefined,
-        password: formData.password,
-        role: formData.role,
-      });
-      if (res.success) {
-        setMode('login');
-        setFormData((prev) => ({ ...prev, password: '' }));
-      }
-    } catch (err) {
-      setErrorMsg(err.response?.data?.message || err.message || 'Registration failed.');
-    } finally {
-      setLoading(false);
-    }
-  };
+
 
   const handleForgotPasswordSubmit = async (e) => {
     e.preventDefault();
@@ -305,142 +284,10 @@ export default function LoginPage() {
                   <span>Reset Password via Twilio SMS OTP</span>
                 </button>
               </div>
-
-              <div className="text-center pt-4 mt-2">
-                <p className="text-xs text-gray-600 dark:text-white/60">
-                  Don't have an account?{' '}
-                  <button
-                    type="button"
-                    onClick={() => { setMode('register'); setErrorMsg(''); }}
-                    className="font-bold text-brand-500 hover:text-brand-400 transition-colors"
-                  >
-                    Sign Up
-                  </button>
-                </p>
-              </div>
             </form>
           )}
 
-          {mode === 'register' && (
-            <form onSubmit={handleRegisterSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold tracking-wider text-gray-500 dark:text-white/60 uppercase block">First Name</label>
-                  <div className="relative">
-                    <FiUser className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40" size={13} />
-                    <input
-                      type="text"
-                      name="firstName"
-                      required
-                      value={formData.firstName}
-                      onChange={handleInputChange}
-                      placeholder="John"
-                      className="w-full bg-black/[0.03] dark:bg-white/[0.04] border border-gray-200 dark:border-white/15 rounded-xl py-2.5 pl-9 pr-3 text-xs text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/30 focus:border-brand-500 focus:bg-white dark:focus:bg-white/[0.08] transition-all outline-none"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold tracking-wider text-gray-500 dark:text-white/60 uppercase block">Last Name</label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    required
-                    value={formData.lastName}
-                    onChange={handleInputChange}
-                    placeholder="Doe"
-                    className="w-full bg-black/[0.03] dark:bg-white/[0.04] border border-gray-200 dark:border-white/15 rounded-xl py-2.5 px-3 text-xs text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/30 focus:border-brand-500 focus:bg-white dark:focus:bg-white/[0.08] transition-all outline-none"
-                  />
-                </div>
-              </div>
 
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold tracking-wider text-gray-500 dark:text-white/60 uppercase block">Email Address</label>
-                <div className="relative">
-                  <FiMail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40" />
-                  <input
-                    type="email"
-                    name="email"
-                    required
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    placeholder="name@domain.com"
-                    className="w-full bg-black/[0.03] dark:bg-white/[0.04] border border-gray-200 dark:border-white/15 rounded-xl py-2.5 pl-10 pr-4 text-xs text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/30 focus:border-brand-500 focus:bg-white dark:focus:bg-white/[0.08] transition-all outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold tracking-wider text-gray-500 dark:text-white/60 uppercase block">Phone Number (For OTP)</label>
-                <div className="relative">
-                  <FiPhone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40" />
-                  <input
-                    type="tel"
-                    name="phone"
-                    required
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    placeholder="+919876543210"
-                    className="w-full bg-black/[0.03] dark:bg-white/[0.04] border border-gray-200 dark:border-white/15 rounded-xl py-2.5 pl-10 pr-4 text-xs text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/30 focus:border-brand-500 focus:bg-white dark:focus:bg-white/[0.08] transition-all outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold tracking-wider text-gray-500 dark:text-white/60 uppercase block">Password</label>
-                <div className="relative">
-                  <FiLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40" />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    name="password"
-                    required
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    placeholder="Min 8 characters"
-                    className="w-full bg-black/[0.03] dark:bg-white/[0.04] border border-gray-200 dark:border-white/15 rounded-xl py-2.5 pl-10 pr-10 text-xs text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/30 focus:border-brand-500 focus:bg-white dark:focus:bg-white/[0.08] transition-all outline-none"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40 hover:text-gray-700 dark:hover:text-white transition-colors"
-                    title={showPassword ? 'Hide password' : 'Show password'}
-                  >
-                    {showPassword ? <FiEyeOff size={16} /> : <FiEye size={16} />}
-                  </button>
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold tracking-wider text-gray-500 dark:text-white/60 uppercase block">Account Type</label>
-                <select
-                  name="role"
-                  value={formData.role}
-                  onChange={handleInputChange}
-                  className="w-full bg-black/[0.03] dark:bg-white/[0.04] border border-gray-200 dark:border-white/15 rounded-xl py-2.5 px-3.5 text-xs text-gray-900 dark:text-white focus:border-brand-500 focus:bg-white dark:focus:bg-white/[0.08] transition-all outline-none appearance-none"
-                >
-                  <option className="bg-white dark:bg-[#14142B]" value="customer">Client (Send Gifts & Memories)</option>
-                  <option className="bg-white dark:bg-[#14142B]" value="delivery">Delivery Agent (Courier Services)</option>
-                </select>
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-500 to-purple-600 text-white font-extrabold text-xs tracking-wide uppercase shadow-lg shadow-brand-500/30 hover:scale-[1.01] hover:shadow-brand-500/40 transition-all flex items-center justify-center gap-2 mt-4 disabled:opacity-50"
-              >
-                {loading ? 'Creating Account...' : <>Sign Up <FiArrowRight /></>}
-              </button>
-
-              <div className="text-center pt-2">
-                <button
-                  type="button"
-                  onClick={() => { setMode('login'); setErrorMsg(''); }}
-                  className="text-xs text-gray-500 dark:text-white/50 hover:text-gray-800 dark:hover:text-white transition-colors flex items-center justify-center gap-1 mx-auto"
-                >
-                  <FiArrowLeft /> Back to Sign In
-                </button>
-              </div>
-            </form>
-          )}
 
           {mode === 'forgot' && (
             <form onSubmit={handleForgotPasswordSubmit} className="space-y-5">

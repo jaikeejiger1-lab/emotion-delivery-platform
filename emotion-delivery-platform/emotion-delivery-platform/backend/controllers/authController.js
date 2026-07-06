@@ -4,7 +4,7 @@
  * Implements:
  *  - Secure Registration & Login with Bcrypt + JWT
  *  - Account Lockout mechanism (5 failed attempts -> 15 min lock)
- *  - Forgot & Reset Password Flow with 6-digit phone OTP via Twilio
+ *  - Forgot & Reset Password Flow with 6-digit email OTP via Nodemailer
  *  - Delivery Partner Login & Google OAuth callback
  */
 
@@ -45,69 +45,13 @@ const sendTokenResponse = (user, statusCode, res) => {
 
 // ────────────────────────────────────────────────────────────────────────
 // POST /api/auth/register
-// Public sign-up — creates account and logs the user in immediately.
-// Email verification is currently disabled (SMTP not yet configured).
 // ────────────────────────────────────────────────────────────────────────
 exports.register = async (req, res, next) => {
   try {
-    const { firstName, lastName, email, phone, password, role } = req.body;
-
-    if (!firstName || !lastName || !email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: 'First name, last name, email, and password are required.',
-      });
-    }
-
-    if (password.length < 8) {
-      return res.status(400).json({
-        success: false,
-        message: 'Password must be at least 8 characters long.',
-      });
-    }
-
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
-    if (existingUser) {
-      return res.status(409).json({
-        success: false,
-        message: 'An account with this email already exists. Please sign in instead.',
-      });
-    }
-
-    if (phone) {
-      const existingPhone = await User.findOne({ phone });
-      if (existingPhone) {
-        return res.status(409).json({
-          success: false,
-          message: 'An account with this phone number already exists.',
-        });
-      }
-    }
-
-    const user = await User.create({
-      firstName,
-      lastName,
-      email: email.toLowerCase(),
-      phone: phone || undefined,
-      password,
-      role: role === 'delivery' ? 'delivery' : 'customer',
-      isVerified: true,   // Auto-verified — email verification not required for now
-      isActive: true,
-      isBanned: false,
+    return res.status(403).json({
+      success: false,
+      message: 'Public registration is disabled. Only authorized administrators can create new accounts.',
     });
-
-    // Notify admins a new account was created (non-blocking, safe if it fails)
-    try {
-      await notifyAdmins({
-        title: 'New user registered',
-        message: `${user.firstName} ${user.lastName} (${user.email}) just created an account.`,
-      });
-    } catch (notifyErr) {
-      console.warn('notifyAdmins failed (non-fatal):', notifyErr.message);
-    }
-
-    // Log the user straight in after signup
-    sendTokenResponse(user, 201, res);
   } catch (error) {
     next(error);
   }
@@ -125,6 +69,7 @@ exports.login = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Email and password are required' });
     }
 
+    // Find user by email and explicitly select password and security fields
     const user = await User.findOne({
       email: email.toLowerCase(),
       isActive: true,
@@ -135,6 +80,7 @@ exports.login = async (req, res, next) => {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
 
+    // Check if account is locked
     if (user.accountLockedUntil && user.accountLockedUntil > Date.now()) {
       const remainingMins = Math.ceil((user.accountLockedUntil - Date.now()) / (60 * 1000));
       return res.status(423).json({
@@ -143,6 +89,7 @@ exports.login = async (req, res, next) => {
       });
     }
 
+    // Block unverified users from logging in
     if (!user.isVerified) {
       return res.status(403).json({
         success: false,
@@ -150,12 +97,14 @@ exports.login = async (req, res, next) => {
       });
     }
 
+    // Verify password
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
+      // Increment failed login attempts
       user.failedLoginAttempts = (user.failedLoginAttempts || 0) + 1;
 
       if (user.failedLoginAttempts >= 5) {
-        user.accountLockedUntil = new Date(Date.now() + 15 * 60 * 1000);
+        user.accountLockedUntil = new Date(Date.now() + 15 * 60 * 1000); // 15 mins lock
         await user.save({ validateBeforeSave: false });
         return res.status(423).json({
           success: false,
@@ -171,11 +120,13 @@ exports.login = async (req, res, next) => {
       });
     }
 
+    // Reset lockout counters on successful login
     if (user.failedLoginAttempts > 0 || user.accountLockedUntil) {
       user.failedLoginAttempts = 0;
       user.accountLockedUntil = null;
     }
 
+    // Log activity for staff/admin
     if (['staff', 'admin', 'superadmin'].includes(user.role)) {
       user.activityLog.unshift({ action: 'login', ip: req.ip || '' });
       if (user.activityLog.length > 50) user.activityLog = user.activityLog.slice(0, 50);
@@ -190,7 +141,6 @@ exports.login = async (req, res, next) => {
 
 // ────────────────────────────────────────────────────────────────────────
 // GET /api/auth/verify-email
-// (Kept for future use if you re-enable email verification later)
 // ────────────────────────────────────────────────────────────────────────
 exports.verifyEmail = async (req, res, next) => {
   try {
@@ -208,6 +158,7 @@ exports.verifyEmail = async (req, res, next) => {
     user.verificationToken = undefined;
     await user.save();
 
+    // Send welcome notification to user now that they are verified
     sendNotification({
       userId: user._id,
       title: 'Welcome to Hardyy Platform! 🎉',
@@ -241,12 +192,15 @@ exports.forgotPassword = async (req, res, next) => {
       });
     }
 
+    // Generate 6-digit secure numeric OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
+    // Store plain OTP code, expiry 10 mins
     user.otpCode = otp;
-    user.otpExpire = new Date(Date.now() + 10 * 60 * 1000);
+    user.otpExpire = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
     await user.save({ validateBeforeSave: false });
 
+    // Send SMS via Twilio using the sendSMS helper
     const messageBody = `Your Emotion Delivery Platform verification code is: ${otp}. It expires in 10 minutes.`;
     await sendSMS(user.phone, messageBody);
 
@@ -293,13 +247,14 @@ exports.verifyOtpReset = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Invalid 6-digit OTP.' });
     }
 
+    // Set new password (will trigger Bcrypt pre-save hook in User.js)
     user.password = newPassword;
     user.otpCode = undefined;
     user.otpExpire = undefined;
     user.failedLoginAttempts = 0;
     user.accountLockedUntil = null;
 
-    await user.save();
+    await user.save(); // pre('save') hashes newPassword
 
     sendTokenResponse(user, 200, res);
   } catch (error) {
@@ -380,7 +335,7 @@ exports.rescueAdmin = async (req, res, next) => {
 
     let adminUser = await User.findOne({ email: adminEmail });
     if (adminUser) {
-      adminUser.password = adminPassword;
+      adminUser.password = adminPassword; // pre('save') will hash it
       adminUser.role = 'superadmin';
       adminUser.isVerified = true;
       adminUser.isActive = true;

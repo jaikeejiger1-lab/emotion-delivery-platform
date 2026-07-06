@@ -49,7 +49,7 @@ const allowedOrigins = [
   'http://127.0.0.1:5504',
 ].filter(Boolean);
 
-const corsOptions = {
+app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
     const isAllowed =
@@ -64,12 +64,7 @@ const corsOptions = {
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-};
-
-// Handle preflight OPTIONS requests for all routes BEFORE the main cors middleware
-app.options('*', cors(corsOptions));
-app.use(cors(corsOptions));
+}));
 
 // ── Rate Limiting ─────────────────────────────────────────────────────
 const limiter = rateLimit({
