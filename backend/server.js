@@ -42,16 +42,20 @@ app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 // ── CORS ──────────────────────────────────────────────────────────────
 const allowedOrigins = [
   process.env.CLIENT_URL,
+  'https://emotion-delivery-platform.vercel.app',
   'http://localhost:3000',
   'http://127.0.0.1:3000',
   'http://localhost:5504',
   'http://127.0.0.1:5504',
 ].filter(Boolean);
 
-app.use(cors({
+const corsOptions = {
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
-    const isAllowed = allowedOrigins.includes(origin) || /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+    const isAllowed =
+      allowedOrigins.includes(origin) ||
+      /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin) ||
+      /^https:\/\/emotion-delivery-platform.*\.vercel\.app$/.test(origin);
     if (isAllowed) {
       callback(null, true);
     } else {
@@ -60,7 +64,12 @@ app.use(cors({
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-}));
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+};
+
+// Handle preflight OPTIONS requests for all routes BEFORE the main cors middleware
+app.options('*', cors(corsOptions));
+app.use(cors(corsOptions));
 
 // ── Rate Limiting ─────────────────────────────────────────────────────
 const limiter = rateLimit({
