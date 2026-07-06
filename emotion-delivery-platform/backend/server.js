@@ -111,7 +111,6 @@ app.use('/api/auth',            authRoutes);
 app.use('/api/memory-vault',    memoryVaultRoutes);
 app.use('/api/recommendations', recommendationRoutes);
 app.use('/api/orders',          orderRoutes);
-app.use('/api/payments',        orderRoutes);
 app.use('/api/media',           mediaRoutes);
 app.use('/api/chatbot',         chatbotRoutes);
 app.use('/api/admin',           adminRoutes);

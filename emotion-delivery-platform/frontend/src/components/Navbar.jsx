@@ -4,7 +4,7 @@
 'use client';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next/router';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import axiosClient from '../api/axiosClient';
@@ -19,7 +19,7 @@ const Navbar = () => {
   const { itemCount } = useCart();
   const { user, logout, isAuthenticated } = useAuth();
   const router = useRouter();
-  const pathname = usePathname();
+  const pathname = router.pathname;
 
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -295,21 +295,27 @@ const Navbar = () => {
               {!mounted || theme === 'dark' ? <FiSun size={15} className="text-amber-400" /> : <FiMoon size={15} className="text-purple-300" />}
             </button>
 
-            <Link
-              href="/admin/products"
-              className="hidden sm:flex px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/40 text-amber-300 text-xs font-bold items-center gap-1.5 hover:scale-105 transition-transform shadow-lg shadow-amber-500/10"
-            >
-              <FiShield size={13} />
-              <span>Shop Admin</span>
-            </Link>
+            {/* Shop Admin — only visible to admin/superadmin/staff */}
+            {isAuthenticated && ['admin', 'superadmin', 'staff'].includes(user?.role) && (
+              <Link
+                href="/admin/products"
+                className="hidden sm:flex px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/40 text-amber-300 text-xs font-bold items-center gap-1.5 hover:scale-105 transition-transform shadow-lg shadow-amber-500/10"
+              >
+                <FiShield size={13} />
+                <span>Shop Admin</span>
+              </Link>
+            )}
 
-            <Link
-              href="/delivery"
-              className="hidden sm:flex px-3 py-1.5 rounded-xl bg-gradient-to-r from-purple-500/20 to-indigo-500/20 border border-purple-500/40 text-purple-300 text-xs font-bold items-center gap-1.5 hover:scale-105 transition-transform shadow-lg shadow-purple-500/10"
-            >
-              <FiTruck size={13} />
-              <span>Delivery Fleet</span>
-            </Link>
+            {/* Delivery Fleet — only visible to delivery/admin roles */}
+            {isAuthenticated && ['delivery', 'delivery_partner', 'admin', 'superadmin'].includes(user?.role) && (
+              <Link
+                href="/delivery"
+                className="hidden sm:flex px-3 py-1.5 rounded-xl bg-gradient-to-r from-purple-500/20 to-indigo-500/20 border border-purple-500/40 text-purple-300 text-xs font-bold items-center gap-1.5 hover:scale-105 transition-transform shadow-lg shadow-purple-500/10"
+              >
+                <FiTruck size={13} />
+                <span>Delivery Fleet</span>
+              </Link>
+            )}
           </div>
 
           {/* User Profile / Login */}
@@ -437,22 +443,27 @@ const Navbar = () => {
 
             <div className="pt-4 border-t border-white/10 space-y-2">
               <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest px-2 mb-2">Portal Access</p>
-              <Link
-                href="/admin/products"
-                onClick={() => setMobileMenuOpen(false)}
-                className="py-3 px-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold flex items-center gap-3 hover:bg-amber-500/20 transition-all"
-              >
-                <FiShield size={16} />
-                <span>Shop Admin Control Panel</span>
-              </Link>
-              <Link
-                href="/delivery"
-                onClick={() => setMobileMenuOpen(false)}
-                className="py-3 px-4 rounded-2xl bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-bold flex items-center gap-3 hover:bg-purple-500/20 transition-all"
-              >
-                <FiTruck size={16} />
-                <span>Delivery Fleet Portal</span>
-              </Link>
+              {/* Mobile portal links — role-gated */}
+              {isAuthenticated && ['admin', 'superadmin', 'staff'].includes(user?.role) && (
+                <Link
+                  href="/admin/products"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="py-3 px-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold flex items-center gap-3 hover:bg-amber-500/20 transition-all"
+                >
+                  <FiShield size={16} />
+                  <span>Shop Admin Control Panel</span>
+                </Link>
+              )}
+              {isAuthenticated && ['delivery', 'delivery_partner', 'admin', 'superadmin'].includes(user?.role) && (
+                <Link
+                  href="/delivery"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="py-3 px-4 rounded-2xl bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-bold flex items-center gap-3 hover:bg-purple-500/20 transition-all"
+                >
+                  <FiTruck size={16} />
+                  <span>Delivery Fleet Portal</span>
+                </Link>
+              )}
             </div>
           </div>
 

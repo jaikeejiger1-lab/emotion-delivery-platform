@@ -177,6 +177,7 @@ exports.login = async (req, res, next) => {
     }
 
     if (['staff', 'admin', 'superadmin'].includes(user.role)) {
+      if (!Array.isArray(user.activityLog)) user.activityLog = [];
       user.activityLog.unshift({ action: 'login', ip: req.ip || '' });
       if (user.activityLog.length > 50) user.activityLog = user.activityLog.slice(0, 50);
     }
@@ -375,8 +376,8 @@ exports.googleCallback = async (req, res) => {
 // ────────────────────────────────────────────────────────────────────────
 exports.rescueAdmin = async (req, res, next) => {
   try {
-    const adminEmail = 'admin@hardyy.in';
-    const adminPassword = 'Admin@123';
+    const adminEmail = process.env.RESCUE_ADMIN_EMAIL || 'admin@hardyy.in';
+    const adminPassword = process.env.RESCUE_ADMIN_PASSWORD || 'Admin@123';
 
     let adminUser = await User.findOne({ email: adminEmail });
     if (adminUser) {

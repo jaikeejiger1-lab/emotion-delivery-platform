@@ -3,7 +3,7 @@
  */
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/router';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useAuth } from '../context/AuthContext';
@@ -16,7 +16,6 @@ import {
 
 export default function LoginPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { login, register, forgotPassword, verifyOtpReset, isAuthenticated, user } = useAuth();
 
   const [mode, setMode] = useState('login');
@@ -30,10 +29,10 @@ export default function LoginPage() {
   const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
-    if (searchParams && searchParams.get('verified') === 'true') {
+    if (router.isReady && router.query.verified === 'true') {
       toast.success('Email verified successfully! You can now log in. 🎉', { duration: 6000 });
     }
-  }, [searchParams]);
+  }, [router.isReady, router.query.verified]);
 
   useEffect(() => {
     if (isAuthenticated && user) {

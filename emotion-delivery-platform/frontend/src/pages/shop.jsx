@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useCart } from '../context/CartContext';
@@ -48,7 +48,8 @@ export default function Shop() {
     const fetchProducts = async () => {
       try {
         const res = await axiosClient.get('/products');
-        if (res.data && res.data.length > 0) {
+        // axiosClient interceptor returns response.data, so res = { success, data, meta }
+        if (res && res.success && Array.isArray(res.data) && res.data.length > 0) {
           setProducts(res.data);
         }
       } catch (err) {

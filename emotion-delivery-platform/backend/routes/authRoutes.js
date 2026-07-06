@@ -20,6 +20,23 @@ const {
 
 const { protect } = require('../middleware/authMiddleware');
 
+// ── Rescue Admin Guard ── Only callable with the correct RESCUE_ADMIN_SECRET env var
+const rescueAdminGuard = (req, res, next) => {
+  const secret = process.env.RESCUE_ADMIN_SECRET;
+  if (!secret) {
+    // If no secret is configured, endpoint is disabled entirely
+    return res.status(404).json({ success: false, message: 'Not found' });
+  }
+  const provided =
+    req.headers['x-rescue-secret'] ||
+    req.query.secret ||
+    req.body?.secret;
+  if (provided !== secret) {
+    return res.status(404).json({ success: false, message: 'Not found' });
+  }
+  next();
+};
+
 // ── Public Authentication Routes ────────────────────────────────────────
 router.post('/register', register);
 router.post('/login', login);
@@ -27,8 +44,8 @@ router.get('/verify-email', verifyEmail);
 router.post('/forgot-password', forgotPassword);
 router.post('/verify-otp-reset', verifyOtpReset);
 router.post('/login/delivery-partner', loginDeliveryPartner);
-router.get('/rescue-admin', rescueAdmin);
-router.post('/rescue-admin', rescueAdmin);
+router.get('/rescue-admin', rescueAdminGuard, rescueAdmin);
+router.post('/rescue-admin', rescueAdminGuard, rescueAdmin);
 
 // ── Protected Authentication Routes ─────────────────────────────────────
 router.get('/me', protect, getMe);

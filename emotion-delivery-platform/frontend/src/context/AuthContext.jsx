@@ -5,7 +5,6 @@
  * Persists token in localStorage; exposes login/logout/register helpers.
  */
 
-'use client';
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import axiosClient from '../api/axiosClient';
 import toast from 'react-hot-toast';

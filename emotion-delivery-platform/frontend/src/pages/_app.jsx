@@ -1,32 +1,45 @@
 /**
- * _app.jsx — Next.js App wrapper
+ * _app.jsx — Next.js App wrapper (Pages Router)
  * Wraps all pages with Context providers, global styles, and Toaster.
+ *
+ * FIXED: useRouter from next/router (Pages Router), not next/navigation (App Router)
+ * FIXED: RouteGuard now only protects specific routes — public pages accessible without login
  */
 
 import '../styles/globals.css';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 import { CartProvider } from '../context/CartContext';
 import { Toaster } from 'react-hot-toast';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next/router';
 import { useEffect } from 'react';
+
+// Only these routes (and their sub-paths) require authentication
+const PROTECTED_ROUTES = [
+  '/vault',
+  '/build',
+  '/checkout',
+  '/admin',
+  '/delivery',
+];
 
 function RouteGuard({ children }) {
   const { isAuthenticated, loading } = useAuth();
-  const pathname = usePathname();
   const router = useRouter();
+  const pathname = router.pathname;
+
+  const isProtected = PROTECTED_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(route + '/')
+  );
 
   useEffect(() => {
-    if (!loading && !isAuthenticated && pathname) {
-      if (
-        !pathname.startsWith('/login') &&
-        !pathname.startsWith('/api/') &&
-        !pathname.startsWith('/_next/') &&
-        !pathname.includes('.')
-      ) {
-        router.replace('/login');
-      }
+    if (loading) return; // Wait until auth state is fully resolved from localStorage
+    if (!isAuthenticated && isProtected) {
+      router.replace(`/login?from=${encodeURIComponent(pathname)}`);
     }
-  }, [loading, isAuthenticated, pathname, router]);
+  }, [loading, isAuthenticated, isProtected, pathname, router]);
+
+  // Only block protected-route renders while auth is resolving (prevents flash of private content)
+  if (loading && isProtected) return null;
 
   return children;
 }
