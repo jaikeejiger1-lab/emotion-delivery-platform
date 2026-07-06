@@ -1,8 +1,8 @@
 /**
- * login.jsx — High-Fidelity Glassmorphic Authentication & Twilio SMS OTP Reset Portal
+ * login.jsx — Glassmorphic Authentication & Twilio SMS OTP Reset Portal
  *
- * This is the Next.js React component for handling User Sign In, Registration,
- * and Twilio SMS OTP Password Recovery.
+ * Handles: User Sign In and Twilio SMS OTP Password Recovery.
+ * Note: Public registration is disabled. Accounts are admin-created only.
  */
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
@@ -14,7 +14,6 @@ import toast from 'react-hot-toast';
 import {
   FiMail,
   FiLock,
-  FiUser,
   FiPhone,
   FiCheck,
   FiArrowRight,
@@ -22,18 +21,17 @@ import {
   FiAlertCircle,
   FiKey,
   FiMessageSquare,
-  FiRefreshCw,
   FiArrowLeft,
   FiEye,
   FiEyeOff,
 } from 'react-icons/fi';
 
+
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { login, register, forgotPassword, verifyOtpReset, isAuthenticated, user } = useAuth();
+  const { login, forgotPassword, verifyOtpReset, isAuthenticated, user } = useAuth();
 
-  // Navigation modes: 'login' | 'register' | 'forgot' | 'reset-otp'
   const [mode, setMode] = useState('login');
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -50,14 +48,12 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  // Handle verified query parameter redirect from email link
   useEffect(() => {
     if (searchParams && searchParams.get('verified') === 'true') {
       toast.success('Email verified successfully! You can now log in. 🎉', { duration: 6000 });
     }
   }, [searchParams]);
 
-  // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated && user) {
       if (['admin', 'superadmin'].includes(user.role)) {
@@ -84,7 +80,6 @@ export default function LoginPage() {
     setErrorMsg('');
   };
 
-  // 1. Handle Login
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     if (!formData.email || !formData.password) {
@@ -96,42 +91,20 @@ export default function LoginPage() {
     try {
       await login(formData.email, formData.password);
     } catch (err) {
-      setErrorMsg(err.response?.data?.message || err.message || 'Login failed. Please verify your email and password.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // 2. Handle Registration (Disabled by Admin)
-  const handleRegisterSubmit = async (e) => {
-    e.preventDefault();
-    if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) {
-      setErrorMsg('Please fill in all required fields.');
-      return;
-    }
-    setLoading(true);
-    setErrorMsg('');
-    try {
-      const res = await register({
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        phone: formData.phone || undefined,
-        password: formData.password,
-        role: formData.role,
-      });
-      if (res.success) {
-        setMode('login');
-        setFormData((prev) => ({ ...prev, password: '' }));
+      const msg = err.response?.data?.message || err.message || '';
+      // Surface 403 / account-not-authorized errors clearly
+      if (err.response?.status === 403 || msg.toLowerCase().includes('not authorized') || msg.toLowerCase().includes('disabled')) {
+        setErrorMsg('Access denied. This platform is restricted to authorized accounts only. Contact an administrator.');
+      } else {
+        setErrorMsg(msg || 'Login failed. Please verify your email and password.');
       }
-    } catch (err) {
-      setErrorMsg(err.response?.data?.message || err.message || 'Public registration is disabled.');
     } finally {
       setLoading(false);
     }
   };
 
-  // 3. Handle Twilio OTP Request (Forgot Password)
+
+
   const handleForgotPasswordSubmit = async (e) => {
     e.preventDefault();
     if (!formData.phone) {
@@ -141,7 +114,6 @@ export default function LoginPage() {
     setLoading(true);
     setErrorMsg('');
     try {
-      // ✅ FIXED: Clean Base URL directly mapped to Render
       const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://emotion-delivery-platform.onrender.com/api';
       const res = await fetch(`${baseUrl}/auth/forgot-password`, {
         method: 'POST',
@@ -159,7 +131,6 @@ export default function LoginPage() {
     }
   };
 
-  // 4. Handle Twilio OTP Verification & Password Reset
   const handleResetPasswordSubmit = async (e) => {
     e.preventDefault();
     if (!formData.otp || !formData.newPassword) {
@@ -173,7 +144,6 @@ export default function LoginPage() {
     setLoading(true);
     setErrorMsg('');
     try {
-      // ✅ FIXED: Clean Base URL directly mapped to Render
       const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://emotion-delivery-platform.onrender.com/api';
       const res = await fetch(`${baseUrl}/auth/verify-otp-reset`, {
         method: 'POST',
@@ -201,13 +171,11 @@ export default function LoginPage() {
       <Navbar />
 
       <main className="flex-grow flex items-center justify-center py-16 px-4 relative overflow-hidden">
-        {/* Ambient Glow Backgrounds */}
         <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-brand-500/15 blur-[120px] pointer-events-none" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-purple-600/15 blur-[120px] pointer-events-none" />
 
         <div className="max-w-md w-full bg-white/90 dark:bg-[#14142B]/80 backdrop-blur-2xl border border-gray-200 dark:border-white/15 p-8 sm:p-10 rounded-3xl shadow-2xl relative z-10 transition-all duration-300">
-          
-          {/* Header Section */}
+
           <div className="text-center mb-8">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-brand-500 to-purple-600 flex items-center justify-center text-2xl mx-auto mb-4 shadow-lg shadow-brand-500/30">
               {mode === 'login' && '👋'}
@@ -216,7 +184,7 @@ export default function LoginPage() {
               {mode === 'reset-otp' && '🔐'}
             </div>
 
-            <h1 className="font-display text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-white via-pink-200 to-pink-400 bg-clip-text text-transparent">
+            <h1 className="font-display text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-gray-900 dark:from-white via-pink-500 dark:via-pink-200 to-pink-600 dark:to-pink-400 bg-clip-text text-transparent">
               {mode === 'login' && 'Welcome Back'}
               {mode === 'register' && 'Create Your Account'}
               {mode === 'forgot' && 'Forgot Password?'}
@@ -231,7 +199,6 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* Verification Alert Banner */}
           {mode === 'login' && (
             <div className="mb-6 p-4 rounded-2xl bg-brand-500/10 border border-brand-500/30 flex items-start gap-3">
               <FiShield className="text-brand-400 shrink-0 mt-0.5 text-base" />
@@ -241,21 +208,19 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* Error Message Box */}
           {errorMsg && (
-            <div className="mb-6 p-4 rounded-2xl bg-red-500/15 border border-red-500/30 text-red-300 flex items-start gap-3 animate-shake">
+            <div className="mb-6 p-4 rounded-2xl bg-red-500/15 border border-red-500/30 text-red-500 dark:text-red-300 flex items-start gap-3 animate-shake">
               <FiAlertCircle className="shrink-0 mt-0.5 text-base text-red-400" />
               <span className="text-xs leading-relaxed font-semibold">{errorMsg}</span>
             </div>
           )}
 
-          {/* ────────────────── 1. LOGIN MODE ────────────────── */}
           {mode === 'login' && (
             <form onSubmit={handleLoginSubmit} className="space-y-5">
               <div className="space-y-1.5">
                 <label className="text-[11px] font-bold tracking-wider text-gray-500 dark:text-white/60 uppercase block">Email Address</label>
                 <div className="relative">
-                  <FiMail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 text-sm" />
+                  <FiMail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40 text-sm" />
                   <input
                     type="email"
                     name="email"
@@ -263,7 +228,7 @@ export default function LoginPage() {
                     value={formData.email}
                     onChange={handleInputChange}
                     placeholder="name@example.com"
-                    className="w-full bg-white/[0.04] border border-white/15 rounded-xl py-3 pl-10 pr-4 text-xs text-white placeholder-white/30 focus:border-brand-500 focus:bg-white/[0.08] transition-all outline-none"
+                    className="w-full bg-black/[0.03] dark:bg-white/[0.04] border border-gray-200 dark:border-white/15 rounded-xl py-3 pl-10 pr-4 text-xs text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/30 focus:border-brand-500 focus:bg-white dark:focus:bg-white/[0.08] transition-all outline-none"
                   />
                 </div>
               </div>
@@ -280,7 +245,7 @@ export default function LoginPage() {
                   </button>
                 </div>
                 <div className="relative">
-                  <FiLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 text-sm" />
+                  <FiLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40 text-sm" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     name="password"
@@ -288,12 +253,12 @@ export default function LoginPage() {
                     value={formData.password}
                     onChange={handleInputChange}
                     placeholder="••••••••"
-                    className="w-full bg-white/[0.04] border border-white/15 rounded-xl py-3 pl-10 pr-10 text-xs text-white placeholder-white/30 focus:border-brand-500 focus:bg-white/[0.08] transition-all outline-none"
+                    className="w-full bg-black/[0.03] dark:bg-white/[0.04] border border-gray-200 dark:border-white/15 rounded-xl py-3 pl-10 pr-10 text-xs text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/30 focus:border-brand-500 focus:bg-white dark:focus:bg-white/[0.08] transition-all outline-none"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40 hover:text-gray-700 dark:hover:text-white transition-colors"
                     title={showPassword ? 'Hide password' : 'Show password'}
                   >
                     {showPassword ? <FiEyeOff size={16} /> : <FiEye size={16} />}
@@ -309,85 +274,27 @@ export default function LoginPage() {
                 {loading ? 'Signing In...' : <>Sign In <FiArrowRight /></>}
               </button>
 
-              <div className="pt-4 border-t border-white/10 mt-6">
+              <div className="pt-4 border-t border-gray-200 dark:border-white/10 mt-6">
                 <button
                   type="button"
                   onClick={() => { setMode('forgot'); setErrorMsg(''); }}
-                  className="w-full py-3 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-purple-300 font-bold text-xs flex items-center justify-center gap-2 transition-all group shadow-sm"
+                  className="w-full py-3 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-purple-600 dark:text-purple-300 font-bold text-xs flex items-center justify-center gap-2 transition-all group shadow-sm"
                 >
                   <FiMessageSquare className="group-hover:scale-110 transition-transform" />
                   <span>Reset Password via Twilio SMS OTP</span>
                 </button>
               </div>
-
-              <div className="text-center pt-4 mt-2">
-                <p className="text-xs text-gray-600 dark:text-white/60">
-                  Don&apos;t have an account?{' '}
-                  <button
-                    type="button"
-                    onClick={() => { setMode('register'); setErrorMsg(''); }}
-                    className="font-bold text-brand-500 hover:text-brand-400 transition-colors"
-                  >
-                    Sign Up
-                  </button>
-                </p>
-              </div>
             </form>
           )}
 
-          {/* ────────────────── 2. REGISTER MODE ────────────────── */}
-          {mode === 'register' && (
-            <form onSubmit={handleRegisterSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold tracking-wider text-white/60 uppercase block">First Name</label>
-                  <div className="relative">
-                    <FiUser className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40" size={13} />
-                    <input
-                      type="text"
-                      name="firstName"
-                      required
-                      value={formData.firstName}
-                      onChange={handleInputChange}
-                      placeholder="John"
-                      className="w-full bg-white/[0.04] border border-white/15 rounded-xl py-2.5 pl-9 pr-3 text-xs text-white placeholder-white/30 focus:border-brand-500 focus:bg-white/[0.08] transition-all outline-none"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold tracking-wider text-white/60 uppercase block">Last Name</label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    required
-                    value={formData.lastName}
-                    onChange={handleInputChange}
-                    placeholder="Doe"
-                    className="w-full bg-white/[0.04] border border-white/15 rounded-xl py-2.5 px-3 text-xs text-white placeholder-white/30 focus:border-brand-500 focus:bg-white/[0.08] transition-all outline-none"
-                  />
-                </div>
-              </div>
 
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold tracking-wider text-white/60 uppercase block">Email Address</label>
-                <div className="relative">
-                  <FiMail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40" />
-                  <input
-                    type="email"
-                    name="email"
-                    required
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    placeholder="name@domain.com"
-                    className="w-full bg-white/[0.04] border border-white/15 rounded-xl py-2.5 pl-10 pr-4 text-xs text-white placeholder-white/30 focus:border-brand-500 focus:bg-white/[0.08] transition-all outline-none"
-                  />
-                </div>
-              </div>
 
+          {mode === 'forgot' && (
+            <form onSubmit={handleForgotPasswordSubmit} className="space-y-5">
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold tracking-wider text-white/60 uppercase block">Phone Number (For OTP)</label>
+                <label className="text-[11px] font-bold tracking-wider text-gray-500 dark:text-white/60 uppercase block">Phone Number</label>
                 <div className="relative">
-                  <FiPhone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40" />
+                  <FiPhone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40 text-sm" />
                   <input
                     type="tel"
                     name="phone"
@@ -395,50 +302,96 @@ export default function LoginPage() {
                     value={formData.phone}
                     onChange={handleInputChange}
                     placeholder="+919876543210"
-                    className="w-full bg-white/[0.04] border border-white/15 rounded-xl py-2.5 pl-10 pr-4 text-xs text-white placeholder-white/30 focus:border-brand-500 focus:bg-white/[0.08] transition-all outline-none"
+                    className="w-full bg-black/[0.03] dark:bg-white/[0.04] border border-gray-200 dark:border-white/15 rounded-xl py-3 pl-10 pr-4 text-xs text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/30 focus:border-brand-500 focus:bg-white dark:focus:bg-white/[0.08] transition-all outline-none"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-500 to-purple-600 text-white font-extrabold text-xs tracking-wide uppercase shadow-lg shadow-brand-500/30 hover:scale-[1.01] hover:shadow-brand-500/40 transition-all flex items-center justify-center gap-2 mt-2 disabled:opacity-50"
+              >
+                {loading ? 'Sending OTP...' : <>Send SMS Code <FiArrowRight /></>}
+              </button>
+
+              <div className="text-center pt-4 border-t border-gray-200 dark:border-white/10 mt-6">
+                <button
+                  type="button"
+                  onClick={() => { setMode('login'); setErrorMsg(''); }}
+                  className="text-xs text-gray-500 dark:text-white/50 hover:text-gray-800 dark:hover:text-white transition-colors flex items-center justify-center gap-1 mx-auto"
+                >
+                  <FiArrowLeft /> Back to Sign In
+                </button>
+              </div>
+            </form>
+          )}
+
+          {mode === 'reset-otp' && (
+            <form onSubmit={handleResetPasswordSubmit} className="space-y-5">
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold tracking-wider text-gray-500 dark:text-white/60 uppercase block">6-Digit SMS Code</label>
+                <div className="relative">
+                  <FiKey className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40 text-sm" />
+                  <input
+                    type="text"
+                    name="otp"
+                    required
+                    value={formData.otp}
+                    onChange={handleInputChange}
+                    placeholder="123456"
+                    className="w-full bg-black/[0.03] dark:bg-white/[0.04] border border-gray-200 dark:border-white/15 rounded-xl py-3 pl-10 pr-4 text-xs text-gray-900 dark:text-white tracking-widest placeholder-gray-400 dark:placeholder-white/30 focus:border-brand-500 focus:bg-white dark:focus:bg-white/[0.08] transition-all outline-none"
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold tracking-wider text-white/60 uppercase block">Password</label>
+                <label className="text-[11px] font-bold tracking-wider text-gray-500 dark:text-white/60 uppercase block">New Password</label>
                 <div className="relative">
-                  <FiLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40" />
+                  <FiLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40 text-sm" />
                   <input
-                    type={showPassword ? 'text' : 'password'}
-                    name="password"
+                    type={showNewPassword ? 'text' : 'password'}
+                    name="newPassword"
                     required
-                    value={formData.password}
+                    value={formData.newPassword}
                     onChange={handleInputChange}
                     placeholder="Min 8 characters"
-                    className="w-full bg-white/[0.04] border border-white/15 rounded-xl py-2.5 pl-10 pr-10 text-xs text-white placeholder-white/30 focus:border-brand-500 focus:bg-white/[0.08] transition-all outline-none"
+                    className="w-full bg-black/[0.03] dark:bg-white/[0.04] border border-gray-200 dark:border-white/15 rounded-xl py-3 pl-10 pr-10 text-xs text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/30 focus:border-brand-500 focus:bg-white dark:focus:bg-white/[0.08] transition-all outline-none"
                   />
-                  <button
+                   <button
                     type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
-                    title={showPassword ? 'Hide password' : 'Show password'}
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-white/40 hover:text-gray-700 dark:hover:text-white transition-colors"
                   >
-                    {showPassword ? <FiEyeOff size={16} /> : <FiEye size={16} />}
+                    {showNewPassword ? <FiEyeOff size={16} /> : <FiEye size={16} />}
                   </button>
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold tracking-wider text-white/60 uppercase block">Account Type</label>
-                <select
-                  name="role"
-                  value={formData.role}
-                  onChange={handleInputChange}
-                  className="w-full bg-white/[0.04] border border-white/15 rounded-xl py-2.5 px-3.5 text-xs text-white focus:border-brand-500 focus:bg-white/[0.08] transition-all outline-none appearance-none"
-                >
-                  <option className="bg-[#14142B]" value="customer">Client (Send Gifts & Memories)</option>
-                  <option className="bg-[#14142B]" value="delivery">Delivery Agent (Courier Services)</option>
-                </select>
-              </div>
-
-              {/* ✅ FIXED: Completed the button and missing closing tags */}
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-500 to-purple-600 text-white font-extrabold text-xs tracking-wide uppercase shadow-lg shadow-brand-500/30 hover:scale-[1.01] hover:shadow-brand-
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-500 to-purple-600 text-white font-extrabold text-xs tracking-wide uppercase shadow-lg shadow-brand-500/30 hover:scale-[1.01] hover:shadow-brand-500/40 transition-all flex items-center justify-center gap-2 mt-2 disabled:opacity-50"
+              >
+                {loading ? 'Resetting Password...' : <>Confirm New Password <FiCheck /></>}
+              </button>
+
+              <div className="text-center pt-4 border-t border-gray-200 dark:border-white/10 mt-6">
+                <button
+                  type="button"
+                  onClick={() => { setMode('login'); setErrorMsg(''); }}
+                  className="text-xs text-gray-500 dark:text-white/50 hover:text-gray-800 dark:hover:text-white transition-colors flex items-center justify-center gap-1 mx-auto"
+                >
+                  <FiArrowLeft /> Cancel and Return to Login
+                </button>
+              </div>
+            </form>
+          )}
+
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  );
+}
