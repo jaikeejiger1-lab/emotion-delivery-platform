@@ -1,7 +1,7 @@
 /**
  * login.jsx — Authentication & Twilio SMS OTP Reset Portal
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import Navbar from '../components/Navbar';
@@ -34,17 +34,27 @@ export default function LoginPage() {
     }
   }, [router.isReady, router.query.verified]);
 
+  // Role-based redirect helper — called imperatively from handlers using
+  // res.data.role directly from the API response. No React state dependency.
+  const redirectByRole = useCallback((role) => {
+    if (['admin', 'superadmin'].includes(role)) {
+      router.push('/admin');
+    } else if (['delivery', 'delivery_partner', 'delivery_agent'].includes(role)) {
+      router.push('/delivery');
+    } else {
+      router.push('/');
+    }
+  }, [router]);
+
+  // Passive guard only: bounces an already-authenticated user away from /login
+  // (e.g. page refresh while logged in, or back-button after login).
+  // Active login/register handlers call redirectByRole() directly — they do NOT
+  // wait for this effect, which would lose the race against setLoading(false).
   useEffect(() => {
     if (isAuthenticated && user) {
-      if (['admin', 'superadmin'].includes(user.role)) {
-        router.push('/admin');
-      } else if (['delivery', 'delivery_partner', 'delivery_agent'].includes(user.role)) {
-        router.push('/delivery');
-      } else {
-        router.push('/');
-      }
+      redirectByRole(user.role);
     }
-  }, [isAuthenticated, user, router]);
+  }, [isAuthenticated, user, redirectByRole]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -67,7 +77,11 @@ export default function LoginPage() {
     setLoading(true);
     setErrorMsg('');
     try {
-      await login(formData.email, formData.password);
+      // Redirect immediately using role from API response — before setLoading(false)
+      // runs. This avoids the React 18 batching race where setLoading causes a
+      // re-render that interrupts the passive useEffect redirect.
+      const res = await login(formData.email, formData.password);
+      redirectByRole(res.data?.role || 'customer');
     } catch (err) {
       setErrorMsg(err.response?.data?.message || err.message || 'Login failed. Please verify your email and password.');
     } finally {
@@ -98,6 +112,9 @@ export default function LoginPage() {
       });
       if (res.success) {
         toast.success('Account created! You are now logged in. 🎉');
+        // Redirect immediately using role from API response — previously missing
+        // entirely, which left the user stuck on /login after registration.
+        redirectByRole(res.data?.role || 'customer');
       }
     } catch (err) {
       setErrorMsg(err.response?.data?.message || err.message || 'Registration failed. Please try again.');
