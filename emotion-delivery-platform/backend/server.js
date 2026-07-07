@@ -23,6 +23,7 @@ const authRoutes         = require('./routes/authRoutes');
 const memoryVaultRoutes  = require('./routes/memoryVaultRoutes');
 const recommendationRoutes = require('./routes/recommendationRoutes');
 const orderRoutes        = require('./routes/orderRoutes');
+const paymentRoutes      = require('./routes/paymentRoutes');
 const mediaRoutes        = require('./routes/mediaRoutes');
 const chatbotRoutes      = require('./routes/chatbotRoutes');
 const adminRoutes        = require('./routes/adminRoutes');
@@ -111,6 +112,7 @@ app.use('/api/auth',            authRoutes);
 app.use('/api/memory-vault',    memoryVaultRoutes);
 app.use('/api/recommendations', recommendationRoutes);
 app.use('/api/orders',          orderRoutes);
+app.use('/api/payments',        paymentRoutes);   // Dedicated Razorpay payment endpoints
 app.use('/api/media',           mediaRoutes);
 app.use('/api/chatbot',         chatbotRoutes);
 app.use('/api/admin',           adminRoutes);

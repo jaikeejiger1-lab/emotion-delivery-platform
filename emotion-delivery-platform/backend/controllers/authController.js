@@ -376,8 +376,15 @@ exports.googleCallback = async (req, res) => {
 // ────────────────────────────────────────────────────────────────────────
 exports.rescueAdmin = async (req, res, next) => {
   try {
-    const adminEmail = process.env.RESCUE_ADMIN_EMAIL || 'admin@hardyy.in';
-    const adminPassword = process.env.RESCUE_ADMIN_PASSWORD || 'Admin@123';
+    const adminEmail = process.env.RESCUE_ADMIN_EMAIL;
+    const adminPassword = process.env.RESCUE_ADMIN_PASSWORD;
+
+    if (!adminEmail || !adminPassword) {
+      return res.status(500).json({
+        success: false,
+        message: 'RESCUE_ADMIN_EMAIL and RESCUE_ADMIN_PASSWORD env vars are required.',
+      });
+    }
 
     let adminUser = await User.findOne({ email: adminEmail });
     if (adminUser) {
