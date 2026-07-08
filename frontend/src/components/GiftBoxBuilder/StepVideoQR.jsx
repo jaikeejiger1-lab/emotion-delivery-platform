@@ -9,7 +9,7 @@
 'use client';
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiUploadCloud, FiVideo, FiX, FiCheck } from 'react-icons/fi';
+import { FiUploadCloud, FiVideo, FiX, FiCheck, FiLink } from 'react-icons/fi';
 import { useCart } from '../../context/CartContext';
 import axiosClient from '../../api/axiosClient';
 import toast from 'react-hot-toast';
@@ -98,6 +98,29 @@ const StepVideoQR = () => {
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden"
           >
+            {/* External URL input box */}
+            <div className="mb-5">
+              <label htmlFor="video-url-input" className="text-white/60 text-sm font-medium mb-2 flex items-center gap-2">
+                <FiLink size={14} /> Paste Video Link (YouTube, Google Drive, iCloud, Vimeo)
+              </label>
+              <div className="flex gap-2">
+                <input
+                  id="video-url-input"
+                  type="url"
+                  placeholder="https://drive.google.com/..."
+                  className="glass-input flex-1 p-2.5 rounded-xl text-sm"
+                  value={videoMessage.videoUrl || ''}
+                  onChange={(e) => {
+                    update({ videoUrl: e.target.value, enabled: true });
+                    if (e.target.value) setPreviewUrl(null);
+                  }}
+                />
+              </div>
+              <p className="text-white/30 text-xs mt-1.5">
+                Paste any accessible link, OR upload a local video file below:
+              </p>
+            </div>
+
             {/* Upload zone */}
             {!previewUrl ? (
               <motion.div

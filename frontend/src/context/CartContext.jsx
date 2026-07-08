@@ -13,10 +13,14 @@ import React, { createContext, useContext, useReducer, useEffect } from 'react';
 const initialState = {
   items: [],       // [{ productId, name, image, price, quantity, subtotal }]
   packaging: { tier: 'standard', color: 'kraft', ribbon: false, packagingPrice: 0 },
+  greetingCard: { enabled: false, message: '', aiCategory: 'birthday', price: 0 },
   handwrittenLetter: { enabled: false, message: '', fontStyle: 'cursive', price: 0 },
   videoMessage: { enabled: false, videoUrl: '', qrCodeUrl: '', price: 0 },
+  voiceMessage: { enabled: false, audioUrl: '', price: 0 },
+  photoPrint: { enabled: false, imageUrl: '', prompt: '', price: 0 },
   secretSurpriseMode: false,
   anonymousGift: false,
+  midnightDelivery: false,
   scheduledDelivery: { date: null, timeSlot: '' },
   relationId: null,
 };
@@ -85,6 +89,39 @@ const cartReducer = (state, action) => {
         },
       };
 
+    case 'SET_GREETING_CARD':
+      return {
+        ...state,
+        greetingCard: {
+          ...state.greetingCard,
+          ...action.payload,
+          price: action.payload.enabled ? 49 : 0,
+        },
+      };
+
+    case 'SET_VOICE_MESSAGE':
+      return {
+        ...state,
+        voiceMessage: {
+          ...state.voiceMessage,
+          ...action.payload,
+          price: action.payload.enabled ? 99 : 0,
+        },
+      };
+
+    case 'SET_PHOTO_PRINT':
+      return {
+        ...state,
+        photoPrint: {
+          ...state.photoPrint,
+          ...action.payload,
+          price: action.payload.enabled ? 79 : 0,
+        },
+      };
+
+    case 'TOGGLE_MIDNIGHT':
+      return { ...state, midnightDelivery: !state.midnightDelivery };
+
     case 'TOGGLE_SECRET_SURPRISE':
       return { ...state, secretSurpriseMode: !state.secretSurpriseMode };
 
@@ -101,7 +138,16 @@ const cartReducer = (state, action) => {
       return initialState;
 
     case 'HYDRATE':
-      return action.payload;
+      return {
+        ...initialState,
+        ...action.payload,
+        packaging: { ...initialState.packaging, ...(action.payload?.packaging || {}) },
+        greetingCard: { ...initialState.greetingCard, ...(action.payload?.greetingCard || {}) },
+        handwrittenLetter: { ...initialState.handwrittenLetter, ...(action.payload?.handwrittenLetter || {}) },
+        videoMessage: { ...initialState.videoMessage, ...(action.payload?.videoMessage || {}) },
+        voiceMessage: { ...initialState.voiceMessage, ...(action.payload?.voiceMessage || {}) },
+        photoPrint: { ...initialState.photoPrint, ...(action.payload?.photoPrint || {}) },
+      };
 
     default:
       return state;
@@ -131,14 +177,18 @@ export const CartProvider = ({ children }) => {
 
   // ── Computed totals ─────────────────────────────────────────────
   const subtotal = state.items.reduce((sum, i) => sum + i.subtotal, 0);
-  const packagingFee = state.packaging.packagingPrice;
-  const letterFee = state.handwrittenLetter.price;
-  const videoFee = state.videoMessage.price;
-  const deliveryFee = 99; // Fixed for MVP
-  const tax = Math.round((subtotal + packagingFee + letterFee + videoFee) * 0.18);
-  const total = subtotal + packagingFee + letterFee + videoFee + deliveryFee + tax;
+  const packagingFee = state.packaging?.packagingPrice || 0;
+  const greetingCardFee = state.greetingCard?.price || 0;
+  const letterFee = state.handwrittenLetter?.price || 0;
+  const videoFee = state.videoMessage?.price || 0;
+  const voiceFee = state.voiceMessage?.price || 0;
+  const photoFee = state.photoPrint?.price || 0;
+  const midnightFee = state.midnightDelivery ? 299 : 0;
+  const deliveryFee = 99; // Fixed base delivery for MVP
+  const tax = Math.round((subtotal + packagingFee + greetingCardFee + letterFee + videoFee + voiceFee + photoFee + midnightFee) * 0.18);
+  const total = subtotal + packagingFee + greetingCardFee + letterFee + videoFee + voiceFee + photoFee + midnightFee + deliveryFee + tax;
 
-  const pricing = { subtotal, packagingFee, letterFee, videoFee, deliveryFee, tax, total };
+  const pricing = { subtotal, packagingFee, greetingCardFee, letterFee, videoFee, voiceFee, photoFee, midnightFee, deliveryFee, tax, total };
 
   return (
     <CartContext.Provider value={{ ...state, dispatch, pricing, itemCount: state.items.length }}>
