@@ -104,7 +104,7 @@ export default function ReportsDashboard() {
   return (
     <AdminLayout>
       <Head>
-        <title>Reports & Data Export — Emotion Delivery Admin</title>
+        <title>Reports & Data Export — Aurora Admin</title>
       </Head>
 
       <div className="space-y-8 max-w-6xl mx-auto">

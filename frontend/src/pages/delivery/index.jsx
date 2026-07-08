@@ -162,7 +162,7 @@ export default function DeliveryPartnerDashboard() {
   return (
     <div className="min-h-screen flex flex-col bg-[#0A0A14] text-white">
       <Head>
-        <title>Courier Fleet Portal — Emotion Delivery</title>
+        <title>Courier Fleet Portal — Aurora</title>
       </Head>
       <Navbar />
 

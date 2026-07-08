@@ -10,7 +10,7 @@ export default function VaultPage() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900 dark:bg-[#0D0D1A] dark:text-white transition-colors duration-300">
       <Head>
-        <title>My Memory Vault — Emotion Delivery Platform</title>
+        <title>My Memory Vault — Aurora</title>
         <meta name="description" content="Manage your relationship reminders, milestone trackers, and automated gift calendars." />
       </Head>
       <Navbar />

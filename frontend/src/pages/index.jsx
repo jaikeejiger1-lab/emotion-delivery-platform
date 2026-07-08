@@ -89,8 +89,8 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900 dark:bg-[#0D0D1A] dark:text-white transition-colors duration-300">
       <Head>
-        <title>Emotion Delivery Platform — Crafting Meaningful Gift Boxes</title>
-        <meta name="description" content="India's #1 emotion gift delivery SaaS platform. Send personalized gift boxes with handwritten letters, video QR codes, and midnight delivery." />
+        <title>Aurora — Crafting Meaningful Gift Boxes</title>
+        <meta name="description" content="India's #1 Aurora gift delivery platform. Send personalized gift boxes with handwritten letters, video QR codes, and midnight delivery." />
       </Head>
 
       <Navbar />
@@ -151,7 +151,7 @@ export default function Home() {
             >
               <span className="text-xs font-bold uppercase tracking-widest text-brand-400 block mb-2">Workflow</span>
               <h2 className="font-display text-3xl sm:text-4xl font-bold text-white">
-                How Emotion Delivery Works
+                How Aurora Works
               </h2>
             </motion.div>
 

@@ -149,7 +149,7 @@ const Navbar = () => {
           </div>
           <div>
             <span className="font-display text-xl font-bold bg-gradient-to-r from-white via-pink-200 to-pink-400 bg-clip-text text-transparent">
-              Emotion Delivery
+              Aurora
             </span>
             <span className="block text-[10px] text-white/40 tracking-widest uppercase">
               SaaS Platform

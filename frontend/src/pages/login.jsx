@@ -183,7 +183,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900 dark:bg-[#0D0D1A] dark:text-white selection:bg-brand-500 selection:text-white transition-colors duration-300">
       <Head>
-        <title>Sign In / Sign Up — Emotion Delivery Platform</title>
+        <title>Sign In / Sign Up — Aurora</title>
       </Head>
 
       <Navbar />

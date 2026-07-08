@@ -20,11 +20,11 @@ const Footer = () => {
           <div className="flex items-center gap-3 mb-4">
             <span className="text-2xl">🎁</span>
             <span className="font-display text-2xl font-bold bg-gradient-to-r from-white via-pink-200 to-pink-400 bg-clip-text text-transparent">
-              Emotion Delivery
+              Aurora
             </span>
           </div>
           <p className="text-xs text-white/40 leading-relaxed max-w-sm mb-6">
-            India's most premium emotion delivery SaaS platform. Making every occasion unforgettable with handwritten letters, video messages, and live GPS tracking since 2024.
+            India's most premium Aurora gift delivery platform. Making every occasion unforgettable with handwritten letters, video messages, and live GPS tracking since 2024.
           </p>
           <div className="flex items-center gap-3">
             {['Instagram', 'Twitter', 'Facebook', 'LinkedIn'].map((soc) => (
@@ -97,7 +97,7 @@ const Footer = () => {
 
       {/* Bottom Bar */}
       <div className="max-w-7xl mx-auto pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between text-xs text-white/30 gap-4">
-        <p>© 2026 Emotion Delivery Platform. Built for high-scale enterprise SaaS operations.</p>
+        <p>© 2026 Aurora. Built for high-scale enterprise SaaS operations.</p>
         <div className="flex items-center gap-6">
           <span>Security Verified</span>
           <span>SSL 256-Bit Encrypted</span>

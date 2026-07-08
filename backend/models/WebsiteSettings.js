@@ -8,7 +8,7 @@ const WebsiteSettingsSchema = new mongoose.Schema(
   {
     platformName: {
       type: String,
-      default: "Emotion Delivery Platform",
+      default: "Aurora",
       trim: true,
     },
     maintenanceMode: {
@@ -44,7 +44,7 @@ const WebsiteSettingsSchema = new mongoose.Schema(
       twitter: { type: String, default: "" },
     },
     seo: {
-      metaTitle: { type: String, default: "Emotion Delivery Platform — Crafting Meaningful Gift Boxes" },
+      metaTitle: { type: String, default: "Aurora — Crafting Meaningful Gift Boxes" },
       metaDescription: { type: String, default: "Send personalised gift boxes with handwritten letters and video messages." },
     },
   },

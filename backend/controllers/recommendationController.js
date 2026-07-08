@@ -126,7 +126,7 @@ exports.generateGreeting = async (req, res, next) => {
     // ── Real GPT-4o-mini call if API key is active ─────────────────────────
     if (!isPlaceholderKey) {
       try {
-        const systemPrompt = `You are Hardyy's expert AI gift writer. Craft a warm, heartfelt, and memorable greeting card message (approx 2 to 3 sentences, around 40-60 words) suitable for a printed luxury greeting card. Include appropriate emojis. Do not wrap in quotes or formatting.`;
+        const systemPrompt = `You are Aurora's expert AI gift writer. Craft a warm, heartfelt, and memorable greeting card message (approx 2 to 3 sentences, around 40-60 words) suitable for a printed luxury greeting card. Include appropriate emojis. Do not wrap in quotes or formatting.`;
         const userPrompt = `Write a ${catKey} greeting message for a ${relation} on the occasion of ${occasion}. Make it genuine and touching.`;
 
         const response = await fetch('https://api.openai.com/v1/chat/completions', {

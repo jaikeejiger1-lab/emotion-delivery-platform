@@ -86,7 +86,7 @@ const StepGreetingCard = () => {
                   <FiStar className="text-brand-400" /> AI Greeting Generator
                 </span>
                 <span className="text-xs text-brand-300 font-medium bg-brand-500/20 px-2.5 py-0.5 rounded-full">
-                  Hardyy AI Assistant
+                  Aurora AI Assistant
                 </span>
               </div>
               <p className="text-white/40 text-xs mb-4">

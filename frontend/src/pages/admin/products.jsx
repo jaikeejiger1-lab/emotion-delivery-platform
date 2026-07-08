@@ -163,7 +163,7 @@ export default function AdminProducts() {
   return (
     <AdminLayout>
       <Head>
-        <title>Shop Inventory Control — Hardyy Admin</title>
+        <title>Shop Inventory Control — Aurora Admin</title>
       </Head>
 
       <div className="space-y-8">

@@ -94,7 +94,7 @@ export default function Shop() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900 dark:bg-[#0D0D1A] dark:text-white transition-colors duration-300">
       <Head>
-        <title>Shop Gift Catalog — Emotion Delivery Platform</title>
+        <title>Shop Gift Catalog — Aurora</title>
         <meta name="description" content="Browse handcrafted chocolates, candles, preserved roses, and personalized keepsakes." />
       </Head>
 

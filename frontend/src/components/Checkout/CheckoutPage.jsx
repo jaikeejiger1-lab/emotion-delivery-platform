@@ -274,7 +274,7 @@ const CheckoutPage = () => {
         key: keyId || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount,
         currency: 'INR',
-        name: 'Emotion Delivery',
+        name: 'Aurora',
         description: `Gift for ${address.recipientName}`,
         order_id: razorpayOrderId,
         prefill: {

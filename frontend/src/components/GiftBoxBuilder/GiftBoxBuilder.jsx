@@ -113,7 +113,7 @@ const GiftBoxBuilder = () => {
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-card border-brand-500/20 mb-3">
             <span className="text-lg">🎁</span>
-            <span className="text-white/60 text-xs sm:text-sm font-medium">Emotion Delivery Platform</span>
+            <span className="text-white/60 text-xs sm:text-sm font-medium">Aurora Platform</span>
           </div>
           <h1 className="section-title text-3xl sm:text-4xl font-extrabold font-display">
             Craft Your Custom Gift Box

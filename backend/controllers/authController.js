@@ -211,8 +211,8 @@ exports.verifyEmail = async (req, res, next) => {
 
     sendNotification({
       userId: user._id,
-      title: 'Welcome to Hardyy Platform! 🎉',
-      message: `Hi ${user.firstName}, your account is verified! Explore our personalized emotion delivery gifts.`,
+      title: 'Welcome to Aurora! 🎉',
+      message: `Hi ${user.firstName}, your account is verified! Explore our personalized Aurora gift boxes.`,
       type: 'system',
       channel: ['in_app', 'email'],
     });
@@ -248,7 +248,7 @@ exports.forgotPassword = async (req, res, next) => {
     user.otpExpire = new Date(Date.now() + 10 * 60 * 1000);
     await user.save({ validateBeforeSave: false });
 
-    const messageBody = `Your Emotion Delivery Platform verification code is: ${otp}. It expires in 10 minutes.`;
+    const messageBody = `Your Aurora verification code is: ${otp}. It expires in 10 minutes.`;
     await sendSMS(user.phone, messageBody);
 
     res.json({

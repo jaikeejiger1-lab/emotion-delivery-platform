@@ -115,7 +115,7 @@ const AdminLayout = ({ children }) => {
               </div>
               <div>
                 <span className="font-display font-extrabold text-base tracking-wide text-white block leading-tight">
-                  Hardyy Admin
+                  Aurora Admin
                 </span>
                 <span className="text-[10px] uppercase tracking-widest text-amber-400 font-bold block">
                   {user.role} Clearance

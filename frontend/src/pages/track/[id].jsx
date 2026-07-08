@@ -14,7 +14,7 @@ export default function TrackPage() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900 dark:bg-[#0D0D1A] dark:text-white transition-colors duration-300">
       <Head>
-        <title>Track Your Order — Emotion Delivery Platform</title>
+        <title>Track Your Order — Aurora</title>
         <meta name="description" content="Live track your personalised gift on a map. See real-time agent location and delivery updates." />
       </Head>
       <Navbar />

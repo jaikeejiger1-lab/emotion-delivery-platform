@@ -172,7 +172,7 @@ exports.downloadReport = async (req, res, next) => {
     if (format === 'excel') {
       if (exceljs) {
         const workbook = new exceljs.Workbook();
-        workbook.creator = 'Emotion Delivery Platform';
+        workbook.creator = 'Aurora';
         workbook.created = new Date();
 
         const worksheet = workbook.addWorksheet(type.toUpperCase());
@@ -237,7 +237,7 @@ exports.downloadReport = async (req, res, next) => {
 
         // Header Banner
         doc.rect(0, 0, doc.page.width, 70).fill('#0A0A14');
-        doc.fillColor('#E85D9A').fontSize(22).text('EMOTION DELIVERY PLATFORM', 40, 20);
+        doc.fillColor('#E85D9A').fontSize(22).text('AURORA', 40, 20);
         doc.fillColor('#FFFFFF').fontSize(11).text(`${reportTitle} | Generated: ${new Date().toLocaleString()}`, 40, 48);
 
         let y = 95;

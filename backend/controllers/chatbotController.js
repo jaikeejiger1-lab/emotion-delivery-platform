@@ -19,7 +19,7 @@ const FAQ_RESPONSES = [
   { k: ['partner', 'shop', 'store'], r: '🏪 We have 500+ partner gift shops pan-India. Orders are assigned to the nearest shop for expert packing and fast dispatch.' },
 ];
 
-const DEFAULT_RESPONSE = `Hi! I'm Hardyy's AI assistant 🎁 I can help you with:\n\n• 🌙 Midnight delivery info\n• 📹 Video QR setup\n• 🎟️ Coupon codes\n• 📍 Order tracking\n• ✍️ Handwritten letters\n• 💳 Payment options\n\nWhat would you like to know?`;
+const DEFAULT_RESPONSE = `Hi! I'm Aurora's AI assistant 🎁 I can help you with:\n\n• 🌙 Midnight delivery info\n• 📹 Video QR setup\n• 🎟️ Coupon codes\n• 📍 Order tracking\n• ✍️ Handwritten letters\n• 💳 Payment options\n\nWhat would you like to know?`;
 
 const findFaqResponse = (message) => {
   const lower = message.toLowerCase();
@@ -47,7 +47,7 @@ exports.handleMessage = async (req, res, next) => {
       // append a trailing assistant prefill message, as Anthropic/Vertex AI
       // and some OpenAI-compatible APIs reject conversations that end with
       // role: 'assistant' (HTTP 400: "conversation must end with a user message").
-      const systemPrompt = `You are Hardyy's helpful gift concierge AI. Hardyy is India's premium emotion gift delivery platform. You help customers with gifting ideas, order tracking, delivery options (including midnight delivery), gift customisation (handwritten letters, video QR, photo prints), and platform features. Be warm, helpful, and concise. Use emojis appropriately. Always recommend relevant Hardyy features. Respond in plain text with emojis; do not wrap your answer in JSON or code blocks.`;
+      const systemPrompt = `You are Aurora's helpful gift concierge AI. Aurora is India's premium gift delivery platform. You help customers with gifting ideas, order tracking, delivery options (including midnight delivery), gift customisation (handwritten letters, video QR, photo prints), and platform features. Be warm, helpful, and concise. Use emojis appropriately. Always recommend relevant Aurora features. Respond in plain text with emojis; do not wrap your answer in JSON or code blocks.`;
 
       // Sanitize history:
       // 1. Only keep recognised roles (user / assistant).

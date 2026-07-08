@@ -89,7 +89,7 @@ export default function AdminDashboard() {
   return (
     <AdminLayout>
       <Head>
-        <title>Master Admin Dashboard — Emotion Delivery</title>
+        <title>Master Admin Dashboard — Aurora</title>
       </Head>
 
       <div className="space-y-8">

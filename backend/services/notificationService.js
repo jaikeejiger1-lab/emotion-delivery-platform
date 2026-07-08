@@ -84,7 +84,7 @@ const sendEmail = async ({ to, subject, html, text }) => {
       return { success: true, mock: true };
     }
     const info = await transporter.sendMail({
-      from: process.env.EMAIL_FROM || '"Hardyy Platform" <no-reply@emotiondelivery.app>',
+      from: process.env.EMAIL_FROM || '"Aurora" <no-reply@emotiondelivery.app>',
       to,
       subject,
       html: html || `<p>${text || subject}</p>`,
@@ -164,7 +164,7 @@ const sendNotification = async ({
             </div>
           ` : ''}
           <hr style="border: none; border-top: 1px solid #222; margin: 24px 0;" />
-          <p style="font-size: 11px; color: #666; text-align: center;">Emotion Delivery Platform • Secure Automated Notification</p>
+          <p style="font-size: 11px; color: #666; text-align: center;">Aurora • Secure Automated Notification</p>
         </div>
       `;
       tasks.push(sendEmail({ to: user.email, subject: title, html, text: message }));
