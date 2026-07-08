@@ -7,7 +7,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 import { useAuth } from '../../context/AuthContext';
 import {
   FiGrid, FiUsers, FiShoppingBag, FiShield, FiBox,
@@ -17,7 +17,7 @@ import {
 const AdminLayout = ({ children }) => {
   const { user, loading, logout } = useAuth();
   const router = useRouter();
-  const pathname = usePathname();
+  const pathname = router.pathname;
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {

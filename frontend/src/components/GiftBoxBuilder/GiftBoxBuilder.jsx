@@ -23,7 +23,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiArrowRight, FiCheck, FiChevronRight, FiChevronDown, FiTrash2 } from 'react-icons/fi';
 import { useCart } from '../../context/CartContext';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 
 import StepProductSelect from './StepProductSelect';
 import StepPackaging from './StepPackaging';

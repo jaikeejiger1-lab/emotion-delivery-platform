@@ -16,7 +16,7 @@ import { FiMapPin, FiClock, FiShield, FiEyeOff, FiGift, FiCheck, FiSearch, FiNav
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import axiosClient from '../../api/axiosClient';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 
 // ── Time slots ────────────────────────────────────────────────────
