@@ -1,13 +1,35 @@
 /**
- * Hero.jsx — Dynamic Hero Section extracted from legacy HTML
+ * Hero.jsx — Dynamic Hero Section with Staggered Entrance & Subtle Motion
  */
 'use client';
 import React from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { FiArrowRight, FiStar, FiGift, FiClock } from 'react-icons/fi';
 
 const Hero = () => {
+  const shouldReduceMotion = useReducedMotion();
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.12,
+        delayChildren: shouldReduceMotion ? 0 : 0.05,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 24 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
+    },
+  };
+
   return (
     <section className="relative pt-12 pb-24 px-4 overflow-hidden">
       
@@ -17,12 +39,15 @@ const Hero = () => {
       <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
         
         {/* Left Column: Copy & CTAs */}
-        <div className="text-center lg:text-left space-y-6">
-          
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="text-center lg:text-left space-y-6"
+        >
           {/* Badge */}
           <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
+            variants={itemVariants}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.05] border border-white/10 text-brand-300 text-xs font-semibold backdrop-blur-md shadow-lg"
           >
             <FiStar className="text-brand-400" />
@@ -31,9 +56,7 @@ const Hero = () => {
 
           {/* Title */}
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
+            variants={itemVariants}
             className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight"
           >
             Send Gifts That Convey Your <br />
@@ -44,9 +67,7 @@ const Hero = () => {
 
           {/* Subtitle */}
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            variants={itemVariants}
             className="text-white/60 text-base sm:text-lg max-w-xl mx-auto lg:mx-0 leading-relaxed"
           >
             Curate personalized gift boxes with authentic handwritten letters, embed video QR memories, and surprise loved ones with guaranteed midnight delivery & live GPS tracking.
@@ -54,32 +75,40 @@ const Hero = () => {
 
           {/* Action Buttons */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            variants={itemVariants}
             className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4"
           >
-            <Link
-              href="/build"
-              className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-brand-500 to-purple-600 text-white font-bold text-sm shadow-xl shadow-brand-500/25 hover:scale-105 transition-all flex items-center justify-center gap-2 group"
+            <motion.div
+              whileHover={shouldReduceMotion ? {} : { scale: 1.03, y: -2 }}
+              whileTap={shouldReduceMotion ? {} : { scale: 0.98 }}
+              className="w-full sm:w-auto"
             >
-              <span>Build Your Gift Box</span>
-              <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
-            </Link>
+              <Link
+                href="/build"
+                className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-brand-500 to-purple-600 text-white font-bold text-sm shadow-xl shadow-brand-500/25 transition-colors flex items-center justify-center gap-2 group"
+              >
+                <span>Build Your Gift Box</span>
+                <FiArrowRight className="group-hover:translate-x-1.5 transition-transform duration-300" />
+              </Link>
+            </motion.div>
 
-            <Link
-              href="/shop"
-              className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-white/[0.06] border border-white/15 text-white font-semibold text-sm hover:bg-white/10 transition-all flex items-center justify-center gap-2"
+            <motion.div
+              whileHover={shouldReduceMotion ? {} : { scale: 1.02, y: -2 }}
+              whileTap={shouldReduceMotion ? {} : { scale: 0.98 }}
+              className="w-full sm:w-auto"
             >
-              <span>Explore Catalog</span>
-            </Link>
+              <Link
+                href="/shop"
+                className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-white/[0.06] border border-white/15 text-white font-semibold text-sm hover:bg-white/10 transition-colors flex items-center justify-center gap-2"
+              >
+                <span>Explore Catalog</span>
+              </Link>
+            </motion.div>
           </motion.div>
 
           {/* Key Metrics */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
+            variants={itemVariants}
             className="grid grid-cols-3 gap-6 pt-8 border-t border-white/10 max-w-lg mx-auto lg:mx-0"
           >
             <div>
@@ -96,16 +125,21 @@ const Hero = () => {
             </div>
           </motion.div>
 
-        </div>
+        </motion.div>
 
         {/* Right Column: Visual Mockup */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6 }}
           className="relative flex items-center justify-center"
         >
-          <div className="w-full max-w-md bg-white/[0.04] border border-white/10 rounded-3xl p-6 backdrop-blur-2xl shadow-2xl relative overflow-hidden">
+          <motion.div
+            animate={shouldReduceMotion ? { y: 0 } : { y: [0, -10, 0] }}
+            transition={{ repeat: Infinity, duration: 6, ease: 'easeInOut' }}
+            style={{ willChange: 'transform' }}
+            className="w-full max-w-md bg-white/[0.04] border border-white/10 rounded-3xl p-6 backdrop-blur-2xl shadow-2xl relative overflow-hidden"
+          >
             
             <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/10">
               <div className="flex items-center gap-3">
@@ -159,12 +193,12 @@ const Hero = () => {
 
             </div>
 
-          </div>
+          </motion.div>
 
           {/* Floating Badges */}
           <motion.div
-            animate={{ y: [0, -8, 0] }}
-            transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
+            animate={shouldReduceMotion ? { y: 0 } : { y: [0, -6, 0] }}
+            transition={{ repeat: Infinity, duration: 4.5, ease: 'easeInOut' }}
             style={{ willChange: 'transform' }}
             className="absolute -top-6 -left-4 px-4 py-2.5 rounded-2xl bg-[#1A1A3E] border border-white/15 shadow-2xl flex items-center gap-2.5"
           >

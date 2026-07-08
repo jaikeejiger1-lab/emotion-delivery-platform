@@ -1,10 +1,11 @@
 /**
- * index.jsx — Home Page (Extracted & Ported from legacy index.html)
+ * index.jsx — Home Page with Scroll-Triggered Reveals & Interactive Polish
  */
-import React, { useState } from 'react';
+import React from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { motion, useReducedMotion } from 'framer-motion';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import Hero from '../components/Hero';
@@ -42,9 +43,47 @@ const STEPS = [
 
 export default function Home() {
   const router = useRouter();
+  const shouldReduceMotion = useReducedMotion();
 
   const handleCategoryClick = (catId) => {
     router.push(`/shop?category=${catId}`);
+  };
+
+  const sectionHeaderVariants = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
+    },
+  };
+
+  const gridVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.05,
+      },
+    },
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 18 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.4, ease: 'easeOut' },
+    },
+  };
+
+  const stepCardVariants = {
+    hidden: { opacity: 0, scale: shouldReduceMotion ? 1 : 0.96 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: { duration: 0.45, ease: 'easeOut' },
+    },
   };
 
   return (
@@ -62,42 +101,74 @@ export default function Home() {
 
         {/* Categories Section */}
         <section className="py-16 px-4 max-w-7xl mx-auto">
-          <div className="text-center mb-12">
+          <motion.div
+            variants={sectionHeaderVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-60px' }}
+            className="text-center mb-12"
+          >
             <h2 className="font-display text-3xl sm:text-4xl font-bold text-white mb-3">
               Shop by Occasion
             </h2>
             <p className="text-white/50 text-sm sm:text-base max-w-xl mx-auto">
               Whatever the celebration, we have handcrafted gift collections tailored to evoke deep emotional resonance.
             </p>
-          </div>
+          </motion.div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <motion.div
+            variants={gridVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-60px' }}
+            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
+          >
             {CATEGORIES.map((cat) => (
-              <button
+              <motion.button
                 key={cat.id}
+                variants={cardVariants}
+                whileHover={shouldReduceMotion ? {} : { y: -4, scale: 1.02 }}
+                whileTap={shouldReduceMotion ? {} : { scale: 0.96 }}
                 onClick={() => handleCategoryClick(cat.id)}
-                className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-brand-500/50 hover:bg-white/[0.06] transition-all flex flex-col items-center justify-center text-center group cursor-pointer"
+                className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-brand-500/50 hover:bg-white/[0.06] transition-colors flex flex-col items-center justify-center text-center group cursor-pointer shadow-sm"
               >
-                <span className="text-3xl mb-3 group-hover:scale-110 transition-transform">{cat.emoji}</span>
+                <span className="text-3xl mb-3 group-hover:scale-110 transition-transform duration-300">{cat.emoji}</span>
                 <span className="text-xs font-bold text-white/80 group-hover:text-white">{cat.name}</span>
-              </button>
+              </motion.button>
             ))}
-          </div>
+          </motion.div>
         </section>
 
         {/* How It Works Workflow Steps */}
         <section className="py-20 px-4 bg-white/[0.015] border-y border-white/5">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16">
+            <motion.div
+              variants={sectionHeaderVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-60px' }}
+              className="text-center mb-16"
+            >
               <span className="text-xs font-bold uppercase tracking-widest text-brand-400 block mb-2">Workflow</span>
               <h2 className="font-display text-3xl sm:text-4xl font-bold text-white">
                 How Emotion Delivery Works
               </h2>
-            </div>
+            </motion.div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <motion.div
+              variants={gridVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-60px' }}
+              className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
+            >
               {STEPS.map((s, idx) => (
-                <div key={s.num} className="relative p-6 rounded-3xl bg-white/[0.03] border border-white/10 flex flex-col justify-between">
+                <motion.div
+                  key={s.num}
+                  variants={stepCardVariants}
+                  whileHover={shouldReduceMotion ? {} : { y: -5 }}
+                  className="relative p-6 rounded-3xl bg-white/[0.03] border border-white/10 hover:border-brand-500/40 hover:bg-white/[0.05] transition-colors flex flex-col justify-between shadow-md"
+                >
                   <div>
                     <div className="flex items-center justify-between mb-6">
                       <span className="w-12 h-12 rounded-2xl bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-2xl">
@@ -111,37 +182,60 @@ export default function Home() {
                   <div className="mt-6 pt-4 border-t border-white/5 flex items-center text-[11px] text-brand-400 font-semibold">
                     <span>Step {idx + 1}</span>
                   </div>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           </div>
         </section>
 
         {/* Features Grid */}
         <section className="py-20 px-4 max-w-7xl mx-auto">
-          <div className="text-center mb-16">
+          <motion.div
+            variants={sectionHeaderVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-60px' }}
+            className="text-center mb-16"
+          >
             <span className="text-xs font-bold uppercase tracking-widest text-purple-400 block mb-2">Platform Capabilities</span>
             <h2 className="font-display text-3xl sm:text-4xl font-bold text-white">
               Why We Are Different
             </h2>
-          </div>
+          </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <motion.div
+            variants={gridVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-60px' }}
+            className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
             {FEATURES.map((feat) => (
-              <div key={feat.title} className="p-6 rounded-3xl bg-white/[0.03] border border-white/10 hover:border-white/20 transition-all space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-2xl">
+              <motion.div
+                key={feat.title}
+                variants={cardVariants}
+                whileHover={shouldReduceMotion ? {} : { y: -4, scale: 1.01 }}
+                className="p-6 rounded-3xl bg-white/[0.03] border border-white/10 hover:border-white/25 transition-colors space-y-4 group shadow-md"
+              >
+                <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform duration-300">
                   {feat.icon}
                 </div>
                 <h3 className="text-base font-bold text-white">{feat.title}</h3>
                 <p className="text-xs text-white/50 leading-relaxed">{feat.desc}</p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </section>
 
         {/* Call to Action Banner */}
         <section className="py-16 px-4 max-w-5xl mx-auto mb-16">
-          <div className="p-10 sm:p-14 rounded-3xl bg-gradient-to-r from-brand-900/90 via-purple-900/90 to-indigo-900/90 border border-brand-500/30 text-center space-y-6 relative overflow-hidden shadow-2xl">
+          <motion.div
+            initial={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.96 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="p-10 sm:p-14 rounded-3xl bg-gradient-to-r from-brand-900/90 via-purple-900/90 to-indigo-900/90 border border-brand-500/30 text-center space-y-6 relative overflow-hidden shadow-2xl"
+          >
             <div className="absolute top-0 right-0 w-64 h-64 bg-brand-500/20 rounded-full blur-3xl pointer-events-none" />
             <h2 className="font-display text-3xl sm:text-4xl font-extrabold text-white">
               Ready to Craft an Unforgettable Memory?
@@ -150,15 +244,21 @@ export default function Home() {
               Build your custom gift box right now and schedule it for instant delivery or a surprise midnight drop.
             </p>
             <div className="pt-2">
-              <Link
-                href="/build"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-white text-[#0D0D1A] font-bold text-sm hover:scale-105 transition-transform shadow-xl"
+              <motion.div
+                whileHover={shouldReduceMotion ? {} : { scale: 1.04, y: -2 }}
+                whileTap={shouldReduceMotion ? {} : { scale: 0.97 }}
+                className="inline-block"
               >
-                <span>Start Building Gift Box</span>
-                <span>✨</span>
-              </Link>
+                <Link
+                  href="/build"
+                  className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-white text-[#0D0D1A] font-bold text-sm shadow-xl transition-colors"
+                >
+                  <span>Start Building Gift Box</span>
+                  <span>✨</span>
+                </Link>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
         </section>
       </main>
 
