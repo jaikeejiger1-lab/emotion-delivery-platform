@@ -35,18 +35,25 @@
 
   body {
     @apply bg-dark-900 text-white font-sans;
-    background-image:
-      radial-gradient(ellipse at 20% 50%, rgba(232, 93, 154, 0.08) 0%, transparent 60%),
-      radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 60%);
     min-height: 100vh;
+    position: relative;
   }
 
-  /* ── Explicit dark mode body (html.dark) — aligns with Tailwind darkMode: 'class' ── */
-  html.dark body {
-    @apply bg-dark-900 text-white;
+  /* Fixed background glows — position:fixed prevents repaint on scroll */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
     background-image:
       radial-gradient(ellipse at 20% 50%, rgba(232, 93, 154, 0.08) 0%, transparent 60%),
       radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 60%);
+  }
+
+  /* Explicit dark mode body (html.dark) — aligns with Tailwind darkMode: 'class' */
+  html.dark body {
+    @apply bg-dark-900 text-white;
   }
 
   ::selection {

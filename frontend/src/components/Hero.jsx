@@ -25,7 +25,7 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.05] border border-white/10 text-brand-300 text-xs font-semibold backdrop-blur-md shadow-lg"
           >
-            <FiStar className="text-brand-400 animate-spin" />
+            <FiStar className="text-brand-400" />
             <span>India&apos;s #1 Emotion Delivery SaaS Platform</span>
           </motion.div>
 
@@ -165,6 +165,7 @@ const Hero = () => {
           <motion.div
             animate={{ y: [0, -8, 0] }}
             transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
+            style={{ willChange: 'transform' }}
             className="absolute -top-6 -left-4 px-4 py-2.5 rounded-2xl bg-[#1A1A3E] border border-white/15 shadow-2xl flex items-center gap-2.5"
           >
             <span className="text-lg">💖</span>

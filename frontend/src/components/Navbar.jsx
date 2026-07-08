@@ -139,7 +139,7 @@ const Navbar = () => {
   };
 
   return (
-    <header ref={navRef} className="sticky top-0 z-50 bg-[#0A0A14]/85 backdrop-blur-xl border-b border-white/10 px-4 py-3">
+    <header ref={navRef} style={{ willChange: 'transform' }} className="sticky top-0 z-50 bg-[#0A0A14]/85 backdrop-blur-xl border-b border-white/10 px-4 py-3">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         
         {/* Brand Logo */}

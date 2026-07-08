@@ -1,8 +1,7 @@
 node_modules/
 .next/
+.env
+.env.local
+.env.production
+.env.*.local
 .env*
-
-# Nested node_modules from deployed subdirectories
-emotion-delivery-platform/backend/node_modules/
-emotion-delivery-platform/frontend/node_modules/
-emotion-delivery-platform/frontend/.next/
